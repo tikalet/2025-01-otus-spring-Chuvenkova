@@ -9,6 +9,9 @@ import ru.otus.hw.domain.Student;
 import ru.otus.hw.domain.TestResult;
 import ru.otus.hw.exceptions.AnswerConvertException;
 import ru.otus.hw.exceptions.AnswerNumberSizeException;
+import ru.otus.hw.tool.TestTextPrintTool;
+
+import java.util.List;
 
 @Service
 public class TestServiceImpl implements TestService {
@@ -29,19 +32,29 @@ public class TestServiceImpl implements TestService {
     public TestResult executeTestFor(Student student) {
         ioService.printLine("");
         ioService.printFormattedLine("Please answer the questions below. Specify only the answer number");
+
         var questions = questionDao.findAll();
         var testResult = new TestResult(student);
 
-        for (var question : questions) {
-            var answerNumber = getAnswerToQuestion(question);
-            var isAnswerValid = checkAnswer(question, answerNumber);
-            testResult.applyAnswer(question, isAnswerValid);
-        }
+        startTest(questions, testResult);
+
         return testResult;
     }
 
+    private void startTest(List<Question> questions, TestResult testResult) {
+        for (var question : questions) {
+            if (!checkCorrectQuestion(question)) {
+                continue;
+            }
+
+            var answerNumber = getAnswerToQuestion(question);
+            var isAnswerValid = checkEnteredAnswer(question, answerNumber);
+            testResult.applyAnswer(question, isAnswerValid);
+        }
+    }
+
     private int getAnswerToQuestion(Question question) {
-        var answerNumberText = ioService.readStringWithPrompt(generateTextForTest(question));
+        var answerNumberText = ioService.readStringWithPrompt(TestTextPrintTool.generateTextForPrint(question));
 
         int answerNumber = DEFAULT_ANSWER_NUMBER;
 
@@ -62,25 +75,7 @@ public class TestServiceImpl implements TestService {
         getAnswerToQuestion(question);
     }
 
-    private String generateTextForTest(Question question) {
-        if (question == null || question.answers() == null || question.answers().isEmpty()) {
-            return " ";
-        }
-
-        StringBuilder resultText = new StringBuilder();
-        int answerIndex = 1;
-
-        resultText.append("\n").append(question.text()).append("\n");
-
-        for (Answer answer : question.answers()) {
-            resultText.append(answerIndex).append(" ").append(answer.text()).append("\n");
-            answerIndex++;
-        }
-
-        return resultText.toString();
-    }
-
-    private boolean checkAnswer(Question question, int personAnswerNumber) {
+    private boolean checkEnteredAnswer(Question question, int personAnswerNumber) {
         int answerIndex = 1;
 
         for (Answer answer : question.answers()) {
@@ -107,6 +102,14 @@ public class TestServiceImpl implements TestService {
         }
 
         throw new AnswerNumberSizeException("There is no such answer number");
+    }
+
+    private boolean checkCorrectQuestion(Question question) {
+        if (question == null || question.answers() == null || question.answers().isEmpty()) {
+            return false;
+        }
+
+        return true;
     }
 
 }
