@@ -30,12 +30,11 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public TestResult executeTestFor(Student student) {
-        ioService.printLine("");
-        ioService.printFormattedLine("Please answer the questions below. Specify only the answer number");
-
         var questions = questionDao.findAll();
         var testResult = new TestResult(student);
 
+        ioService.printLine("");
+        ioService.printFormattedLine("Please answer the questions below. Specify only the answer number");
         startTest(questions, testResult);
 
         return testResult;

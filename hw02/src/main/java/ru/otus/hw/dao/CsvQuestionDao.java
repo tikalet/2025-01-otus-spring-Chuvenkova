@@ -55,8 +55,6 @@ public class CsvQuestionDao implements QuestionDao {
     }
 
     private List<QuestionDto> getQuestionDtoList(InputStream inputStream) {
-        List<QuestionDto> questionDtoList = new ArrayList<QuestionDto>();
-
         try (Reader reader = new BufferedReader(new InputStreamReader(inputStream))) {
             CsvToBean<QuestionDto> csvToBean = new CsvToBeanBuilder<QuestionDto>(reader)
                     .withType(QuestionDto.class)
@@ -64,10 +62,9 @@ public class CsvQuestionDao implements QuestionDao {
                     .withIgnoreLeadingWhiteSpace(true)
                     .build();
 
-            questionDtoList = csvToBean.stream().toList();
-        } catch (IOException e) {
-            throw new QuestionReadException(e.getMessage());
+            return csvToBean.stream().toList();
+        } catch (Exception e) {
+            throw new QuestionReadException(e.getMessage(), e);
         }
-        return questionDtoList;
     }
 }
