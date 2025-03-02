@@ -17,8 +17,6 @@ public class TestServiceImpl implements TestService {
 
     private static final int MIN_ANSWER_NUM = 1;
 
-    private static final int MAX_ANSWER_NUM = 4;
-
     private final IOService ioService;
 
     private final QuestionDao questionDao;
@@ -54,7 +52,7 @@ public class TestServiceImpl implements TestService {
         var answerNumber = DEFAULT_ANSWER_NUMBER;
 
         try {
-            answerNumber = ioService.readIntForRangeWithPrompt(MIN_ANSWER_NUM, MAX_ANSWER_NUM,
+            answerNumber = ioService.readIntForRangeWithPrompt(MIN_ANSWER_NUM, question.answers().size(),
                     TestTextPrintTool.generateTextForPrint(question),
                     "There is no such answer number");
         } catch (IllegalArgumentException e) {
@@ -67,10 +65,6 @@ public class TestServiceImpl implements TestService {
     }
 
     private boolean checkEnteredAnswer(Question question, int personAnswerNumber) {
-        if (question.answers().size() <= (personAnswerNumber - 1)) {
-            return false;
-        }
-
         return question.answers().get(personAnswerNumber - 1).isCorrect();
     }
 

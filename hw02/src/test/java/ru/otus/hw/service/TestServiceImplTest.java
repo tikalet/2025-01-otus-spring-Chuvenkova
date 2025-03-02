@@ -23,8 +23,6 @@ public class TestServiceImplTest {
 
     private static final int MIN_ANSWER_NUM = 1;
 
-    private static final int MAX_ANSWER_NUM = 4;
-
     private static final int MAX_QUESTION_COUNT = 3;
 
     private StreamsIOService ioService;
@@ -46,15 +44,16 @@ public class TestServiceImplTest {
     void shouldTakeTestForAllCorrectAnswers() {
         given(questionDao.findAll()).willReturn(createQuestionList());
 
-        var textText = TestTextPrintTool.generateTextForPrint(createQuestionWithAnswers());
+        var question = createQuestionWithAnswers();
+        var textText = TestTextPrintTool.generateTextForPrint(question);
         var errorText = "There is no such answer number";
-        given(ioService.readIntForRangeWithPrompt(MIN_ANSWER_NUM, MAX_ANSWER_NUM, textText, errorText)).willReturn(1);
+        given(ioService.readIntForRangeWithPrompt(MIN_ANSWER_NUM, question.answers().size(), textText, errorText)).willReturn(1);
 
         testService = new TestServiceImpl(ioService, questionDao);
         TestResult testResult = testService.executeTestFor(createTestStudent());
 
         verify(questionDao, times(1)).findAll();
-        verify(ioService, times(MAX_QUESTION_COUNT)).readIntForRangeWithPrompt(MIN_ANSWER_NUM, MAX_ANSWER_NUM, textText, errorText);
+        verify(ioService, times(MAX_QUESTION_COUNT)).readIntForRangeWithPrompt(MIN_ANSWER_NUM, question.answers().size(), textText, errorText);
 
         assertThat(testResult.getRightAnswersCount() == MAX_QUESTION_COUNT).isTrue();
     }
