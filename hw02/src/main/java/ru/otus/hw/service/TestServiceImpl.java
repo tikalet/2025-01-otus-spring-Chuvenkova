@@ -3,12 +3,9 @@ package ru.otus.hw.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.dao.QuestionDao;
-import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
 import ru.otus.hw.domain.Student;
 import ru.otus.hw.domain.TestResult;
-import ru.otus.hw.exceptions.AnswerConvertException;
-import ru.otus.hw.exceptions.AnswerNumberSizeException;
 import ru.otus.hw.tool.TestTextPrintTool;
 
 import java.util.List;
@@ -17,6 +14,10 @@ import java.util.List;
 public class TestServiceImpl implements TestService {
 
     private static final int DEFAULT_ANSWER_NUMBER = -1;
+
+    private static final int MIN_ANSWER_NUM = 1;
+
+    private static final int MAX_ANSWER_NUM = 4;
 
     private final IOService ioService;
 
@@ -42,9 +43,6 @@ public class TestServiceImpl implements TestService {
 
     private void startTest(List<Question> questions, TestResult testResult) {
         for (var question : questions) {
-            if (!checkCorrectQuestion(question)) {
-                continue;
-            }
 
             var answerNumber = getAnswerToQuestion(question);
             var isAnswerValid = checkEnteredAnswer(question, answerNumber);
@@ -53,62 +51,27 @@ public class TestServiceImpl implements TestService {
     }
 
     private int getAnswerToQuestion(Question question) {
-        var answerNumberText = ioService.readStringWithPrompt(TestTextPrintTool.generateTextForPrint(question));
-
-        int answerNumber = DEFAULT_ANSWER_NUMBER;
+        var answerNumber = DEFAULT_ANSWER_NUMBER;
 
         try {
-            answerNumber = convertStringToInt(answerNumberText);
-            validAnswerNumber(question, answerNumber);
-        } catch (AnswerConvertException | AnswerNumberSizeException e) {
+            answerNumber = ioService.readIntForRangeWithPrompt(MIN_ANSWER_NUM, MAX_ANSWER_NUM,
+                    TestTextPrintTool.generateTextForPrint(question),
+                    "There is no such answer number");
+        } catch (IllegalArgumentException e) {
             ioService.printLine("");
-            ioService.printLine(e.getMessage());
-            repeatQuestion(question);
+            ioService.printFormattedLine("Try to answer the question again");
+            return getAnswerToQuestion(question);
         }
 
         return answerNumber;
     }
 
-    private void repeatQuestion(Question question) {
-        ioService.printFormattedLine("Try to answer the question again");
-        getAnswerToQuestion(question);
-    }
-
     private boolean checkEnteredAnswer(Question question, int personAnswerNumber) {
-        int answerIndex = 1;
-
-        for (Answer answer : question.answers()) {
-            if (answerIndex == personAnswerNumber) {
-                return answer.isCorrect();
-            }
-            answerIndex++;
-        }
-
-        return false;
-    }
-
-    private int convertStringToInt(String answerText) {
-        try {
-            return Integer.parseInt(answerText);
-        } catch (NumberFormatException ex) {
-            throw new AnswerConvertException("Please enter the answer number");
-        }
-    }
-
-    private void validAnswerNumber(Question question, int answerNumber) {
-        if (question.answers().size() >= answerNumber) {
-            return;
-        }
-
-        throw new AnswerNumberSizeException("There is no such answer number");
-    }
-
-    private boolean checkCorrectQuestion(Question question) {
-        if (question == null || question.answers() == null || question.answers().isEmpty()) {
+        if (question.answers().size() <= (personAnswerNumber - 1)) {
             return false;
         }
 
-        return true;
+        return question.answers().get(personAnswerNumber - 1).isCorrect();
     }
 
 }
