@@ -25,7 +25,11 @@ public class TestRunnerServiceImpl implements TestRunnerService {
     }
 
     @Override
-    public void run() {
+    public void run(String... args) throws Exception {
+        run();
+    }
+
+    private void run() {
         var student = studentService.determineCurrentStudent();
 
         try {
@@ -35,4 +39,5 @@ public class TestRunnerServiceImpl implements TestRunnerService {
             ioService.printLineLocalized("TestRunnerService.unable.read.question");
         }
     }
+
 }
