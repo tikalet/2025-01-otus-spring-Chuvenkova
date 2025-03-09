@@ -1,0 +1,3 @@
+# Добавить сюда своих вопросов. Эту строку надо пропустить при настройке CsvToBean (withSkipLines),
+Test1,Yes%true|No%false
+Test2,Yes%true|No1%false|No2%false
