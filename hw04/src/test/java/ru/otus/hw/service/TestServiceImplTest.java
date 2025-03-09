@@ -1,43 +1,40 @@
 package ru.otus.hw.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.otus.hw.dao.CsvQuestionDao;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
 import ru.otus.hw.domain.Student;
 import ru.otus.hw.domain.TestResult;
-import ru.otus.hw.tool.TestTextPrintTool;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+@SpringBootTest(classes = TestServiceImpl.class)
 public class TestServiceImplTest {
 
     private static final int MIN_ANSWER_NUM = 1;
 
     private static final int MAX_QUESTION_COUNT = 3;
 
+    @MockitoBean
     private LocalizedIOService ioService;
 
+    @MockitoBean
     private CsvQuestionDao questionDao;
 
+    @Autowired
     private TestServiceImpl testService;
 
-    @BeforeEach
-    void setUp() {
-        ioService = mock(LocalizedIOService.class);
-        questionDao = mock(CsvQuestionDao.class);
-
-        testService = new TestServiceImpl(ioService, questionDao);
-    }
 
     @DisplayName("Should take the test for all correct answers")
     @Test
@@ -48,7 +45,6 @@ public class TestServiceImplTest {
         var errorText = "TestService.enter.answer.number";
         given(ioService.readIntForRangeLocalized(MIN_ANSWER_NUM, question.answers().size(), errorText)).willReturn(1);
 
-        testService = new TestServiceImpl(ioService, questionDao);
         TestResult testResult = testService.executeTestFor(createTestStudent());
 
         verify(questionDao, times(1)).findAll();

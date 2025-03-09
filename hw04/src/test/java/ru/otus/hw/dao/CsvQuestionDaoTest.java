@@ -1,26 +1,24 @@
 package ru.otus.hw.dao;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.otus.hw.config.TestFileNameProvider;
 import ru.otus.hw.exceptions.QuestionReadException;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
+@SpringBootTest(classes = CsvQuestionDao.class)
 public class CsvQuestionDaoTest {
 
+    @MockitoBean
     private TestFileNameProvider fileNameProvider;
 
+    @Autowired
     private CsvQuestionDao questionDao;
-
-    @BeforeEach
-    void setUp() {
-        fileNameProvider = mock(TestFileNameProvider.class);
-        questionDao = new CsvQuestionDao(fileNameProvider);
-    }
 
     @DisplayName("Should generate the expected exception when the file is not found")
     @Test
