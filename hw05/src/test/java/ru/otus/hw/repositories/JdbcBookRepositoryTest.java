@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе Jdbc для работы с книгами ")
 @JdbcTest
-@Import({JdbcBookRepository.class, JdbcGenreRepository.class})
+@Import({JdbcBookRepository.class})
 class JdbcBookRepositoryTest {
 
     @Autowired
@@ -67,8 +67,6 @@ class JdbcBookRepositoryTest {
                 .matches(book -> book.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
 
-        var ff = repositoryJdbc.findById(returnedBook.getId());
-
         assertThat(repositoryJdbc.findById(returnedBook.getId()))
                 .isPresent()
                 .get()
@@ -89,8 +87,6 @@ class JdbcBookRepositoryTest {
         assertThat(returnedBook).isNotNull()
                 .matches(book -> book.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
-
-        var ff = repositoryJdbc.findById(returnedBook.getId());
 
         assertThat(repositoryJdbc.findById(returnedBook.getId()))
                 .isPresent()
