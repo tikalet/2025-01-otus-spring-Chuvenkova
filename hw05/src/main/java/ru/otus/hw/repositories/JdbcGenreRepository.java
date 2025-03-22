@@ -36,12 +36,14 @@ public class JdbcGenreRepository implements GenreRepository {
     public Optional<Genre> findById(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
 
-        return Optional.ofNullable(namedParameterJdbcOperations.queryForObject(
+        List<Genre> resultList = namedParameterJdbcOperations.query(
                 "SELECT id, " +
                         "name " +
                         "FROM genres " +
                         "WHERE id = :id",
-                params, new GenreRowMapper()));
+                params, new GenreRowMapper());
+
+        return resultList.stream().findFirst();
     }
 
     private static class GenreRowMapper implements RowMapper<Genre> {

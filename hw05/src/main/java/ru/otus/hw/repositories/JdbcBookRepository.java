@@ -45,9 +45,7 @@ public class JdbcBookRepository implements BookRepository {
                         "WHERE b.id = :id",
                 params, new BookRowMapper());
 
-        Book book = resultList.isEmpty() ? null : resultList.get(0);
-
-        return Optional.ofNullable(book);
+        return resultList.stream().findFirst();
     }
 
     @Override
