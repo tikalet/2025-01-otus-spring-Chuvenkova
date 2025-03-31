@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JpaBookRepositoryTest {
 
     private static final long FIRST_ID = 1;
+
     private static final long SECOND_ID = 2;
 
     private static final int BOOKS_SIZE = 3;

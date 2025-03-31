@@ -42,7 +42,8 @@ public class JpaBookCommentRepositoryTest {
         var actualComments = repositoryJpa.findByBookId(FIRST_ID);
 
         assertThat(actualComments).isNotNull().hasSize(COMMENTS_SIZE)
-                .allMatch(bookComment -> bookComment.getCommentText() != null && !bookComment.getCommentText().isEmpty());
+                .allMatch(bookComment -> bookComment.getCommentText() != null
+                        && !bookComment.getCommentText().isEmpty());
 
         actualComments.forEach(System.out::println);
     }
@@ -60,7 +61,9 @@ public class JpaBookCommentRepositoryTest {
                 .matches(comment -> comment.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedComment);
 
-        assertThat(entityManager.find(BookComment.class, returnedComment.getId())).isNotNull().isEqualTo(returnedComment);
+        assertThat(entityManager.find(BookComment.class, returnedComment.getId()))
+                .isNotNull()
+                .isEqualTo(returnedComment);
     }
 
     @DisplayName("должен сохранять измененную книгу")
