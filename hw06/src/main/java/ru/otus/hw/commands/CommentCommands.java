@@ -18,33 +18,33 @@ public class CommentCommands {
     private final CommentConverter commentConverter;
 
     @ShellMethod(value = "Find comment by id", key = "cbid")
-    public String findBookCommentById(long id) {
+    public String findCommentById(long id) {
         return commentService.findById(id)
-                .map(commentConverter::bookCommentToString)
+                .map(commentConverter::commentToString)
                 .orElse("Comment with id %d not found".formatted(id));
     }
 
     @ShellMethod(value = "Find comment by book id", key = "cbbid")
-    public String findBookCommentByBookId(long bookId) {
+    public String findCommentByBookId(long bookId) {
         return commentService.findByBookId(bookId).stream()
-                .map(commentConverter::bookCommentToString)
+                .map(commentConverter::commentToString)
                 .collect(Collectors.joining("," + System.lineSeparator()));
     }
 
     @ShellMethod(value = "Insert comment", key = "cins")
-    public String insertBook(long bookId, String comment) {
-        var savedBook = commentService.insert(comment, bookId);
-        return commentConverter.bookCommentToString(savedBook);
+    public String insertComment(long bookId, String comment) {
+        var savedComment = commentService.insert(bookId, comment);
+        return commentConverter.commentToString(savedComment);
     }
 
     @ShellMethod(value = "Update comment", key = "cupd")
-    public String updateBook(long id, long bookId, String comment) {
-        var savedBook = commentService.update(id, comment, bookId);
-        return commentConverter.bookCommentToString(savedBook);
+    public String updateComment(long id, long bookId, String comment) {
+        var savedComment = commentService.update(id, comment, bookId);
+        return commentConverter.commentToString(savedComment);
     }
 
     @ShellMethod(value = "Delete comment by id", key = "cdel")
-    public void deleteBook(long id) {
+    public void deleteComment(long id) {
         commentService.deleteById(id);
     }
 }

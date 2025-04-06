@@ -33,7 +33,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public Comment insert(String comment, long bookId) {
+    public Comment insert(long bookId, String comment) {
         return save(0, comment, bookId);
     }
 
