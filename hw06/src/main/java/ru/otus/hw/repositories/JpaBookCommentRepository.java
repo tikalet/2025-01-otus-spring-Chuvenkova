@@ -1,6 +1,5 @@
 package ru.otus.hw.repositories;
 
-import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -10,8 +9,6 @@ import ru.otus.hw.models.BookComment;
 
 import java.util.List;
 import java.util.Optional;
-
-import static org.springframework.data.jpa.repository.EntityGraph.EntityGraphType.FETCH;
 
 @Repository
 public class JpaBookCommentRepository implements BookCommentRepository {
@@ -26,13 +23,8 @@ public class JpaBookCommentRepository implements BookCommentRepository {
 
     @Override
     public Optional<BookComment> findById(long id) {
-        EntityGraph<?> entityGraph = entityManager.getEntityGraph("book-comment-entity-graph");
-        TypedQuery<BookComment> query = entityManager.createQuery(
-                "SELECT bc FROM BookComment bc WHERE bc.id = :id",
-                BookComment.class);
-        query.setHint(FETCH.getKey(), entityGraph);
-        query.setParameter("id", id);
-        return query.getResultList().stream().findFirst();
+        BookComment comment = entityManager.find(BookComment.class, id);
+        return Optional.ofNullable(comment);
     }
 
     @Override
@@ -54,8 +46,8 @@ public class JpaBookCommentRepository implements BookCommentRepository {
 
     @Override
     public void deleteById(long id) {
-        Optional<BookComment> bookComment = findById(id);
-        bookComment.ifPresent(entityManager::remove);
+        Optional<BookComment> comment = Optional.ofNullable(entityManager.find(BookComment.class, id));
+        comment.ifPresent(entityManager::remove);
     }
 
     private BookComment insert(BookComment bookComment) {

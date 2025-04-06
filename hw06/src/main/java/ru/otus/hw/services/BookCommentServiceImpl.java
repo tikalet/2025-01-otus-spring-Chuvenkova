@@ -3,8 +3,6 @@ package ru.otus.hw.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.converters.dto.BookCommentDtoConverter;
-import ru.otus.hw.dto.BookCommentDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.BookComment;
 import ru.otus.hw.repositories.BookCommentRepository;
@@ -21,14 +19,9 @@ public class BookCommentServiceImpl implements BookCommentService {
 
     private final BookRepository bookRepository;
 
-    private final BookCommentDtoConverter bookCommentDtoConverter;
-
     @Override
-    @Transactional(readOnly = true)
-    public BookCommentDto findById(long id) {
-        Optional<BookComment> bookComment = bookCommentRepository.findById(id);
-        bookComment.orElseThrow(() -> new EntityNotFoundException("Comment with id %d not found".formatted(id)));
-        return bookCommentDtoConverter.toDto(bookComment.get());
+    public Optional<BookComment> findById(long id) {
+        return bookCommentRepository.findById(id);
     }
 
     @Override

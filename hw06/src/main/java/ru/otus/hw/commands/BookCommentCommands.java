@@ -8,6 +8,7 @@ import ru.otus.hw.services.BookCommentService;
 
 import java.util.stream.Collectors;
 
+@SuppressWarnings({"SpellCheckingInspection", "unused"})
 @RequiredArgsConstructor
 @ShellComponent(value = "book comment commands")
 public class BookCommentCommands {
@@ -18,7 +19,9 @@ public class BookCommentCommands {
 
     @ShellMethod(value = "Find comment by id", key = "cbid")
     public String findBookCommentById(long id) {
-        return bookCommentConverter.bookCommentToString(bookCommentService.findById(id));
+        return  bookCommentService.findById(id)
+                .map(bookCommentConverter::bookCommentToString)
+                .orElse("Comment with id %d not found".formatted(id));
     }
 
     @ShellMethod(value = "Find comment by book id", key = "cbbid")
