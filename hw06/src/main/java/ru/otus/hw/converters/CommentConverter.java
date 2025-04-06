@@ -2,18 +2,18 @@ package ru.otus.hw.converters;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.otus.hw.models.BookComment;
+import ru.otus.hw.models.Comment;
 
 @RequiredArgsConstructor
 @Component
-public class BookCommentConverter {
+public class CommentConverter {
 
     private final BookConverter bookConverter;
 
-    public String bookCommentToString(BookComment bookComment) {
+    public String bookCommentToString(Comment comment) {
         return "Id: %d, comment: %s".formatted(
-                bookComment.getId(),
-                bookComment.getCommentText());
+                comment.getId(),
+                comment.getCommentText());
     }
 
 }

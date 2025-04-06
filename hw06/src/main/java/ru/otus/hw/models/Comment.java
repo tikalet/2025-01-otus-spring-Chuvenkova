@@ -20,7 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "book_comments")
-public class BookComment {
+public class Comment {
 
     @Id
     @Column(name = "id")

@@ -7,21 +7,21 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import ru.otus.hw.models.Book;
-import ru.otus.hw.models.BookComment;
+import ru.otus.hw.models.Comment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе JPA для работы с комментариями для книги")
 @DataJpaTest
-@Import({JpaBookCommentRepository.class})
-public class JpaBookCommentRepositoryTest {
+@Import({JpaCommentRepository.class})
+public class JpaCommentRepositoryTest {
 
     private static final long FIRST_ID = 1;
 
     private static final int COMMENTS_SIZE = 3;
 
     @Autowired
-    private JpaBookCommentRepository repositoryJpa;
+    private JpaCommentRepository repositoryJpa;
 
     @Autowired
     private TestEntityManager entityManager;
@@ -30,7 +30,7 @@ public class JpaBookCommentRepositoryTest {
     @Test
     void shouldReturnCorrectCommentById() {
         var actualComment = repositoryJpa.findById(FIRST_ID);
-        var expectedComment = entityManager.find(BookComment.class, FIRST_ID);
+        var expectedComment = entityManager.find(Comment.class, FIRST_ID);
         assertThat(actualComment).isPresent()
                 .get()
                 .isEqualTo(expectedComment);
@@ -54,14 +54,14 @@ public class JpaBookCommentRepositoryTest {
     void shouldSaveNewBookComment() {
         var book = entityManager.find(Book.class, FIRST_ID);
 
-        var expectedComment = new BookComment(0, "Comment_text_1_158521", book);
+        var expectedComment = new Comment(0, "Comment_text_1_158521", book);
         var returnedComment = repositoryJpa.save(expectedComment);
 
         assertThat(returnedComment).isNotNull()
                 .matches(comment -> comment.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedComment);
 
-        assertThat(entityManager.find(BookComment.class, returnedComment.getId()))
+        assertThat(entityManager.find(Comment.class, returnedComment.getId()))
                 .isNotNull()
                 .isEqualTo(returnedComment);
     }
@@ -71,9 +71,9 @@ public class JpaBookCommentRepositoryTest {
     void shouldSaveUpdatedBook() {
         var book = entityManager.find(Book.class, FIRST_ID);
 
-        var expectedComment = new BookComment(1, "Comment_text_1_158521", book);
+        var expectedComment = new Comment(1, "Comment_text_1_158521", book);
 
-        assertThat(entityManager.find(BookComment.class, expectedComment.getId())).isNotNull()
+        assertThat(entityManager.find(Comment.class, expectedComment.getId())).isNotNull()
                 .isNotEqualTo(expectedComment);
 
         var returnedComment = repositoryJpa.save(expectedComment);
@@ -81,14 +81,14 @@ public class JpaBookCommentRepositoryTest {
                 .matches(comment -> comment.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedComment);
 
-        assertThat(entityManager.find(BookComment.class, returnedComment.getId())).isEqualTo(returnedComment);
+        assertThat(entityManager.find(Comment.class, returnedComment.getId())).isEqualTo(returnedComment);
     }
 
     @DisplayName("должен удалять комментарий по id ")
     @Test
     void shouldDeleteBookComment() {
-        assertThat(entityManager.find(BookComment.class, 1)).isNotNull();
+        assertThat(entityManager.find(Comment.class, 1)).isNotNull();
         repositoryJpa.deleteById(1L);
-        assertThat(entityManager.find(BookComment.class, 1)).isNull();
+        assertThat(entityManager.find(Comment.class, 1)).isNull();
     }
 }
