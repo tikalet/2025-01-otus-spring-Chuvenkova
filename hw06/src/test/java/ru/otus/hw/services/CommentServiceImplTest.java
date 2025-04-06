@@ -41,15 +41,15 @@ public class CommentServiceImplTest {
 
     @DisplayName("должен добавить комментарий для книги")
     @Test
-    void shouldInsertCommentForBookId() {
-        var expectedComment = commentService.insert(3, "new_comment_text");
+    void shouldInsertComment() {
+        var expectedComment = commentService.insert(1, "new_comment_text");
         assertThat(expectedComment).isNotNull();
         assertThatCode(() -> commentConverter.commentToString(expectedComment)).doesNotThrowAnyExceptionExcept();
     }
 
     @DisplayName("должен обновить комментарий для книги")
     @Test
-    void shouldUpdateCommentForBookId() {
+    void shouldUpdateComment() {
         var expectedComment = commentService.update(1, "updated_comment_text", 1);
         assertThat(expectedComment).isNotNull();
         assertThatCode(() -> commentConverter.commentToString(expectedComment)).doesNotThrowAnyExceptionExcept();
@@ -58,7 +58,7 @@ public class CommentServiceImplTest {
     @DisplayName("должен удалить комментарий")
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    void shouldDeleteCommentForBookId() {
+    void shouldDeleteComment() {
         assertThatCode(() -> commentService.deleteById(1)).doesNotThrowAnyExceptionExcept();
     }
 }

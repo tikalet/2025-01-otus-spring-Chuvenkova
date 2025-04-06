@@ -26,11 +26,8 @@ public class JpaBookRepository implements BookRepository {
 
     @Override
     public Optional<Book> findById(long id) {
-        EntityGraph<?> entityGraph = entityManager.getEntityGraph("book-entity-graph");
-        TypedQuery<Book> query = entityManager.createQuery("SELECT b FROM Book b WHERE b.id = :id", Book.class);
-        query.setHint(FETCH.getKey(), entityGraph);
-        query.setParameter("id", id);
-        return query.getResultList().stream().findFirst();
+        Book comment = entityManager.find(Book.class, id);
+        return Optional.ofNullable(comment);
     }
 
     @Override

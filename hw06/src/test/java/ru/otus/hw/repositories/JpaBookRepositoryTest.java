@@ -90,8 +90,9 @@ class JpaBookRepositoryTest {
     @DisplayName("должен удалять книгу по id ")
     @Test
     void shouldDeleteBook() {
-        assertThat(entityManager.find(Book.class, 1)).isNotNull();
+        assertThat(entityManager.find(Book.class, FIRST_ID)).isNotNull();
         repositoryJpa.deleteById(1L);
-        assertThat(entityManager.find(Book.class, 1)).isNull();
+        assertThat(entityManager.find(Book.class, FIRST_ID)).isNull();
     }
+
 }
