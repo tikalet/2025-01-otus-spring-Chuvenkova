@@ -8,7 +8,6 @@ import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
 import ru.otus.hw.domain.Student;
 import ru.otus.hw.domain.TestResult;
-import ru.otus.hw.tool.TestTextPrintTool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +51,8 @@ public class TestServiceImplTest {
         TestResult testResult = testService.executeTestFor(createTestStudent());
 
         verify(questionDao, times(1)).findAll();
-        verify(ioService, times(MAX_QUESTION_COUNT)).readIntForRangeLocalized(MIN_ANSWER_NUM, question.answers().size(), errorText);
+        verify(ioService, times(MAX_QUESTION_COUNT)).readIntForRangeLocalized(MIN_ANSWER_NUM,
+                question.answers().size(), errorText);
 
         assertThat(testResult.getRightAnswersCount() == MAX_QUESTION_COUNT).isTrue();
     }

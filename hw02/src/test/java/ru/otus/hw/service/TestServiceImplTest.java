@@ -47,13 +47,15 @@ public class TestServiceImplTest {
         var question = createQuestionWithAnswers();
         var textText = TestTextPrintTool.generateTextForPrint(question);
         var errorText = "There is no such answer number";
-        given(ioService.readIntForRangeWithPrompt(MIN_ANSWER_NUM, question.answers().size(), textText, errorText)).willReturn(1);
+        given(ioService.readIntForRangeWithPrompt(MIN_ANSWER_NUM, question.answers().size(),
+                textText, errorText)).willReturn(1);
 
         testService = new TestServiceImpl(ioService, questionDao);
         TestResult testResult = testService.executeTestFor(createTestStudent());
 
         verify(questionDao, times(1)).findAll();
-        verify(ioService, times(MAX_QUESTION_COUNT)).readIntForRangeWithPrompt(MIN_ANSWER_NUM, question.answers().size(), textText, errorText);
+        verify(ioService, times(MAX_QUESTION_COUNT)).readIntForRangeWithPrompt(MIN_ANSWER_NUM,
+                question.answers().size(), textText, errorText);
 
         assertThat(testResult.getRightAnswersCount() == MAX_QUESTION_COUNT).isTrue();
     }
