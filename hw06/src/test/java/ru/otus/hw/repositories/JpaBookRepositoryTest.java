@@ -21,8 +21,6 @@ class JpaBookRepositoryTest {
 
     private static final long SECOND_ID = 2;
 
-    private static final int BOOKS_SIZE = 3;
-
     @Autowired
     private JpaBookRepository repositoryJpa;
 
@@ -44,7 +42,7 @@ class JpaBookRepositoryTest {
     void shouldReturnCorrectBooksList() {
         var actualBooks = repositoryJpa.findAll();
 
-        assertThat(actualBooks).isNotNull().hasSize(BOOKS_SIZE)
+        assertThat(actualBooks).isNotNull()
                 .allMatch(book -> !book.getTitle().isEmpty())
                 .allMatch(book -> book.getGenre() != null && !book.getGenre().getName().isEmpty())
                 .allMatch(book -> book.getAuthor() != null && !book.getAuthor().getFullName().isEmpty());

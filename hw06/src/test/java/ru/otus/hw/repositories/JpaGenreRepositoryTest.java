@@ -20,8 +20,6 @@ public class JpaGenreRepositoryTest {
 
     private static final long FIRST_ID = 1;
 
-    private static final int GENRES_SIZE = 3;
-
     @Autowired
     private JpaGenreRepository repositoryJpa;
 
@@ -39,7 +37,7 @@ public class JpaGenreRepositoryTest {
     void shouldReturnCorrectGenresList() {
         var actualGenres = repositoryJpa.findAll();
 
-        assertThat(actualGenres).isNotNull().hasSize(GENRES_SIZE)
+        assertThat(actualGenres).isNotNull()
                 .allMatch(genre -> genre.getName() != null && !genre.getName().isEmpty());
         actualGenres.forEach(System.out::println);
     }

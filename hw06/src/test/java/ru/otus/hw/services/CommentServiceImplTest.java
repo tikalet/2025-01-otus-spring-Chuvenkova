@@ -50,7 +50,7 @@ public class CommentServiceImplTest {
     @DisplayName("должен обновить комментарий для книги")
     @Test
     void shouldUpdateComment() {
-        var expectedComment = commentService.update(1, "updated_comment_text", 1);
+        var expectedComment = commentService.update(1, "updated_comment_text");
         assertThat(expectedComment).isNotNull();
         assertThatCode(() -> commentConverter.commentToString(expectedComment)).doesNotThrowAnyExceptionExcept();
     }

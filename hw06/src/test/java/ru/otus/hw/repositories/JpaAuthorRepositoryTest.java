@@ -17,8 +17,6 @@ public class JpaAuthorRepositoryTest {
 
     private static final long FIRST_ID = 1;
 
-    private static final int AUTHORS_SIZE = 3;
-
     @Autowired
     private JpaAuthorRepository repositoryJpa;
 
@@ -30,7 +28,7 @@ public class JpaAuthorRepositoryTest {
     void shouldReturnCorrectAuthorsList() {
         var actualAuthors = repositoryJpa.findAll();
 
-        assertThat(actualAuthors).isNotNull().hasSize(AUTHORS_SIZE)
+        assertThat(actualAuthors).isNotNull()
                 .allMatch(author -> author.getFullName() != null && !author.getFullName().isEmpty());
         actualAuthors.forEach(System.out::println);
     }

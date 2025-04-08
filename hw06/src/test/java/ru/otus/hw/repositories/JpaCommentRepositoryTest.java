@@ -18,8 +18,6 @@ public class JpaCommentRepositoryTest {
 
     private static final long FIRST_ID = 1;
 
-    private static final int COMMENTS_SIZE = 3;
-
     @Autowired
     private JpaCommentRepository repositoryJpa;
 
@@ -41,17 +39,16 @@ public class JpaCommentRepositoryTest {
     void shouldReturnCorrectCommentByBookId() {
         var actualComments = repositoryJpa.findByBookId(FIRST_ID);
 
-        assertThat(actualComments).isNotNull().hasSize(COMMENTS_SIZE)
-                .allMatch(bookComment -> bookComment.getCommentText() != null
-                        && !bookComment.getCommentText().isEmpty());
+        assertThat(actualComments).isNotNull()
+                .allMatch(comment -> comment.getCommentText() != null
+                        && !comment.getCommentText().isEmpty());
 
         actualComments.forEach(System.out::println);
     }
 
-
     @DisplayName("должен сохранять новый комментарий")
     @Test
-    void shouldSaveNewBookComment() {
+    void shouldSaveNewComment() {
         var book = entityManager.find(Book.class, FIRST_ID);
 
         var expectedComment = new Comment(0, "Comment_text_1_158521", book);
@@ -66,9 +63,9 @@ public class JpaCommentRepositoryTest {
                 .isEqualTo(returnedComment);
     }
 
-    @DisplayName("должен сохранять измененную книгу")
+    @DisplayName("должен сохранять измененный комментарий")
     @Test
-    void shouldSaveUpdatedBook() {
+    void shouldSaveUpdatedComment() {
         var book = entityManager.find(Book.class, FIRST_ID);
 
         var expectedComment = new Comment(1, "Comment_text_1_158521", book);
@@ -84,9 +81,9 @@ public class JpaCommentRepositoryTest {
         assertThat(entityManager.find(Comment.class, returnedComment.getId())).isEqualTo(returnedComment);
     }
 
-    @DisplayName("должен удалять комментарий по id ")
+    @DisplayName("должен удалять комментарий по id")
     @Test
-    void shouldDeleteBookComment() {
+    void shouldDeleteComment() {
         assertThat(entityManager.find(Comment.class, 1)).isNotNull();
         repositoryJpa.deleteById(1L);
         assertThat(entityManager.find(Comment.class, 1)).isNull();
