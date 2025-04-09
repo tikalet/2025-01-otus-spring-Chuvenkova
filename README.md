@@ -11,3 +11,4 @@
 4. \hw04 - домашняя работа по уроку "Продвинутая конфигурация (часть 2) - Conditionals, Events, тестирование"
 5. \hw05 - домашняя работа по уроку "DAO на Spring JDBC" 
 6. \hw06 - домашняя работа по уроку "JPQL, Spring ORM, DAO на основе Spring ORM + JPA" 
+7. \hw07 - домашняя работа по уроку ""Белая магия" Spring Data: Spring Data JPA" 
