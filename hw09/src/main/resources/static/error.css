@@ -1,0 +1,12 @@
+body {
+    text-align: center;
+}
+
+.error-image {
+    background-image: url(sad.png);
+    background-repeat: no-repeat;
+    width: 256px;
+    height: 256px;
+    background-size: contain;
+    margin: auto;
+}

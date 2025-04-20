@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Library - comment</title>
+    <link rel="stylesheet" href="comment.css">
+    <link rel="stylesheet" href="common.css">
+</head>
+<body>
+<h2>Book comments:</h2>
+
+<div class="comment-container">
+    <div class="comment-container-data" th:each="comment : ${comments}">
+        <div th:text="${comment.commentText}" class="comment-container-comment">comment</div>
+    </div>
+</div>
+
+<div class="button-container">
+    <a href="books.html" th:href="@{/}">
+        <button type="button" th:text="Back">Back</button>
+    </a>
+</div>
+</body>
+</html>

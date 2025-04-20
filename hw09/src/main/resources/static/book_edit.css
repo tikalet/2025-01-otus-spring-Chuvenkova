@@ -1,0 +1,13 @@
+.book-edit-row {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+}
+
+.book-edit-label {
+    width: 70px;
+}
+
+.book-edit-list {
+    width: 176px;
+}

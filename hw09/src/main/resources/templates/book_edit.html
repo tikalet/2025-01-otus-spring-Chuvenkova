@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Library - book edit</title>
+    <link rel="stylesheet" href="book_edit.css">
+    <link rel="stylesheet" href="common.css">
+</head>
+<body>
+<h2>Edit book:</h2>
+
+<form id="book-edit-form" action="book_edit.html" th:action="@{/book_edit(id=${book.id})}" th:method="post">
+    <div class="book-edit-row">
+        <label for="book-title-input" class="book-edit-label">Title:</label>
+        <input id="book-title-input" name="title" type="text" th:value="${book.title}" value="some_title"/>
+    </div>
+
+    <div class="book-edit-row">
+        <label for="book-author-list" class="book-edit-label">Author:</label>
+
+        <select id="book-author-list" name="author" class="book-edit-list" th:field=${book.author.id}>
+            <option th:each="aut : ${authors}"
+                    th:value="${aut.id}"
+                    th:text="${aut.fullName}"
+                    th:selected="${aut.id==book.author.id}">Author
+            </option>
+        </select>
+    </div>
+
+    <div class="book-edit-row">
+        <label for="book-genre-list" class="book-edit-label">Genre:</label>
+
+        <select id="book-genre-list" name="genre" class="book-edit-list" th:field=${book.genre.id}>
+            <option th:each="genre : ${genres}"
+                    th:value="${genre.id}"
+                    th:text="${genre.name}"
+                    th:selected="${genre.id==book.genre.id}">Genre
+            </option>
+        </select>
+    </div>
+
+    <div class="book-edit-row">
+        <button type="submit" th:text="Save">Save</button>
+        <a href="books.html" th:href="@{/}"><button type="button" th:text="Cancel">Cancel</button></a>
+    </div>
+</form>
+</body>
+</html>
