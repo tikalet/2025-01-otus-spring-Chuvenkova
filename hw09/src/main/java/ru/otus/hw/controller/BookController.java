@@ -50,7 +50,7 @@ public class BookController {
     }
 
     @PostMapping(value = "/book_delete", params = "id")
-    public String deleteBook(@RequestParam("id") long id, Model model) {
+    public String deleteBook(@RequestParam("id") long id) {
         bookService.deleteById(id);
         return "redirect:/";
     }
@@ -60,7 +60,11 @@ public class BookController {
         List<AuthorDto> authors = authorService.findAll();
         List<GenreDto> genres = genreService.findAll();
 
-        model.addAttribute("book", new BookDto());
+        BookDto bookDto = new BookDto();
+        bookDto.setGenre(new GenreDto());
+        bookDto.setAuthor(new AuthorDto());
+
+        model.addAttribute("book", bookDto);
         model.addAttribute("authors", authors);
         model.addAttribute("genres", genres);
         return "book_new";
