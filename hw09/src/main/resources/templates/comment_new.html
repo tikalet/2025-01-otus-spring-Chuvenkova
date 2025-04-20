@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Library - comment edit</title>
+    <link rel="stylesheet" href="comment_edit.css">
+    <link rel="stylesheet" href="common.css">
+</head>
+<body>
+<h2>Add new comment:</h2>
+
+<form id="comment-edit-form" action="comment_edit.html" th:action="@{/comment_save}" th:method="post">
+    <div class="comment-edit-row">
+        <label for="comment-text-input" type="hidden"></label>
+        <textarea id="comment-text-input" rows="10" name="comment" type="text" th:value="${comment.commentText}"
+               th:field="${comment.commentText}"></textarea>
+        <input type="hidden" th:field="${comment.book.id}" th:value="${bookId}">
+    </div>
+
+    <div class="comment-edit-row">
+        <button type="submit" th:text="Save">Save</button>
+        <a href="comments.html" th:href="@{/comments(bookId=${bookId})}">
+            <button type="button" th:text="Cancel">Cancel</button>
+        </a>
+    </div>
+</form>
+</body>
+</html>

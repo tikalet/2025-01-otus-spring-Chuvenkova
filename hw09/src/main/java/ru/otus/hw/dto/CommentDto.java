@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 
 @Getter
@@ -16,12 +17,14 @@ public class CommentDto {
 
     private String commentText;
 
-    private BookDto bookDto;
+    private BookDto book;
 
     public static CommentDto fromModel(Comment comment) {
         CommentDto commentDto = new CommentDto();
         commentDto.setCommentText(comment.getCommentText());
         commentDto.setId(comment.getId());
+        commentDto.setBook(new BookDto());
+        commentDto.getBook().setId(comment.getBook().getId());
         return commentDto;
     }
 
@@ -29,6 +32,8 @@ public class CommentDto {
         Comment comment = new Comment();
         comment.setCommentText(commentDto.getCommentText());
         comment.setId(commentDto.getId());
+        comment.setBook(new Book());
+        comment.getBook().setId(commentDto.getBook().getId());
         return comment;
     }
 }

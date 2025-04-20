@@ -12,7 +12,8 @@
 <form id="book-edit-form" action="book_edit.html" th:action="@{/book_edit(id=${book.id})}" th:method="post">
     <div class="book-edit-row">
         <label for="book-title-input" class="book-edit-label">Title:</label>
-        <input id="book-title-input" name="title" type="text" th:value="${book.title}" value="some_title"/>
+        <input id="book-title-input" name="title" type="text" th:value="${book.title}" th:field=${book.title}
+               value="some_title"/>
     </div>
 
     <div class="book-edit-row">
@@ -41,7 +42,9 @@
 
     <div class="book-edit-row">
         <button type="submit" th:text="Save">Save</button>
-        <a href="books.html" th:href="@{/}"><button type="button" th:text="Cancel">Cancel</button></a>
+        <a href="books.html" th:href="@{/}">
+            <button type="button" th:text="Cancel">Cancel</button>
+        </a>
     </div>
 </form>
 </body>
