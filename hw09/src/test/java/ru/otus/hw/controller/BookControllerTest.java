@@ -78,6 +78,7 @@ public class BookControllerTest {
     public void shouldSaveEditBookAndRedirectMainPage() throws Exception {
         List<BookDto> bookDtoList = createBookList();
         BookDto bookDto = bookDtoList.get(0);
+        bookDto.setTitle("Title_new");
 
         mvc.perform(post("/book_edit")
                         .param("id", "1")
@@ -85,8 +86,6 @@ public class BookControllerTest {
                         .param("author.id", "1")
                         .param("genre.id", "1"))
                 .andExpect(view().name("redirect:/"));
-
-        bookDto.setTitle("Title_new");
 
         verify(bookService, times(1))
                 .update(bookDto.getId(), bookDto.getTitle(), bookDto.getAuthor().getId(), bookDto.getGenre().getId());

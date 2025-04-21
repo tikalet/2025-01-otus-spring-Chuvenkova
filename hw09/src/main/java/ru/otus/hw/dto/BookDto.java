@@ -50,7 +50,9 @@ public class BookDto {
             return false;
         }
         BookDto bookDto = (BookDto) o;
-        return id == bookDto.id && Objects.equals(title, bookDto.title) && Objects.equals(author, bookDto.author) && Objects.equals(genre, bookDto.genre);
+        return id == bookDto.id && Objects.equals(title, bookDto.title)
+                && Objects.equals(author, bookDto.author)
+                && Objects.equals(genre, bookDto.genre);
     }
 
     @Override

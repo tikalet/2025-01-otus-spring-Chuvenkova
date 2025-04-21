@@ -1,5 +1,5 @@
 .comment-edit-row {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     margin-bottom: 10px;
 }
