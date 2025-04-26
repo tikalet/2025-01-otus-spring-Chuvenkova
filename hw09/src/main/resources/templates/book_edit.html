@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Library - book edit</title>
-    <link rel="stylesheet" href="book_edit.css">
-    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" type="text/css" href="/book_edit.css"/>
+    <link rel="stylesheet" type="text/css" href="/common.css"/>
 </head>
 <body>
 <h2>Edit book:</h2>
 
-<form id="book-edit-form" action="book_edit.html" th:action="@{/book_edit(id=${book.id})}" th:method="post">
+<form id="book-edit-form" action="book_edit.html" th:action="@{/book}" th:method="post">
+    <input id="id" th:field="${book.id}" type="hidden"/>
+
     <div class="book-edit-row">
         <label for="book-title-input" class="book-edit-label">Title:</label>
         <input id="book-title-input" name="title" type="text" th:value="${book.title}" th:field=${book.title}

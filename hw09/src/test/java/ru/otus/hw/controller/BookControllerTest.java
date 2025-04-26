@@ -9,7 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.GenreDto;
-import ru.otus.hw.exceptions.EntityNotFoundException;
+import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
@@ -66,7 +66,7 @@ public class BookControllerTest {
         when(authorService.findAll()).thenReturn(authorDtoList);
         when(genreService.findAll()).thenReturn(genreDtoList);
 
-        mvc.perform(get("/book").param("id", "1"))
+        mvc.perform(get("/book/1"))
                 .andExpect(view().name("book_edit"))
                 .andExpect(model().attribute("book", bookDto))
                 .andExpect(model().attribute("authors", authorDtoList))
@@ -75,12 +75,12 @@ public class BookControllerTest {
 
     @DisplayName("должен обновить книгу и сделать redirect на главную страницу")
     @Test
-    public void shouldSaveEditBookAndRedirectMainPage() throws Exception {
+    public void shouldSaveBookAndRedirectMainPage() throws Exception {
         List<BookDto> bookDtoList = createBookList();
         BookDto bookDto = bookDtoList.get(0);
         bookDto.setTitle("Title_new");
 
-        mvc.perform(post("/book_edit")
+        mvc.perform(post("/book")
                         .param("id", "1")
                         .param("title", "Title_new")
                         .param("author.id", "1")
@@ -94,7 +94,7 @@ public class BookControllerTest {
     @DisplayName("должен удалить книгу и сделать redirect на главную страницу")
     @Test
     public void shouldDeleteBookAndRedirectMainPage() throws Exception {
-        mvc.perform(post("/book_delete").param("id", "1"))
+        mvc.perform(post("/book/1/delete"))
                 .andExpect(view().name("redirect:/"));
 
         verify(bookService, times(1)).deleteById(1);
@@ -112,8 +112,8 @@ public class BookControllerTest {
         when(authorService.findAll()).thenReturn(authorDtoList);
         when(genreService.findAll()).thenReturn(genreDtoList);
 
-        mvc.perform(get("/book_new"))
-                .andExpect(view().name("book_new"))
+        mvc.perform(get("/book"))
+                .andExpect(view().name("book_edit"))
                 .andExpect(model().attribute("book", bookDto))
                 .andExpect(model().attribute("authors", authorDtoList))
                 .andExpect(model().attribute("genres", genreDtoList));
@@ -130,7 +130,7 @@ public class BookControllerTest {
         bookDto.setAuthor(new AuthorDto());
         bookDto.getAuthor().setId(1);
 
-        mvc.perform(post("/book_save")
+        mvc.perform(post("/book")
                         .param("id", "0")
                         .param("title", "new book")
                         .param("author.id", "1")
@@ -138,14 +138,14 @@ public class BookControllerTest {
                 .andExpect(view().name("redirect:/"));
 
         verify(bookService, times(1))
-                .insert(bookDto.getTitle(), bookDto.getAuthor().getId(), bookDto.getGenre().getId());
+                .create(bookDto.getTitle(), bookDto.getAuthor().getId(), bookDto.getGenre().getId());
     }
 
-    @DisplayName("Должен отдать страницу с ошибкой если будет EntityNotFoundException")
+    @DisplayName("Должен отдать страницу с ошибкой если будет NotFoundException")
     @Test
     public void shouldRenderErrorPage() throws Exception {
-        when(bookService.findById(1)).thenThrow(new EntityNotFoundException(""));
-        mvc.perform(get("/book").param("id", "1"))
+        when(bookService.findById(1)).thenThrow(new NotFoundException(""));
+        mvc.perform(get("/book/1"))
                 .andExpect(view().name("error"));
     }
 

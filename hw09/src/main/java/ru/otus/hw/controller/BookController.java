@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.GenreDto;
@@ -31,8 +32,8 @@ public class BookController {
         return "books";
     }
 
-    @GetMapping(value = "/book", params = "id")
-    public String bookEditPage(@RequestParam("id") long id, Model model) {
+    @GetMapping(value = "/book/{id}")
+    public String bookEditPage(@PathVariable("id") long id, Model model) {
         BookDto book = bookService.findById(id);
         List<AuthorDto> authors = authorService.findAll();
         List<GenreDto> genres = genreService.findAll();
@@ -43,19 +44,24 @@ public class BookController {
         return "book_edit";
     }
 
-    @PostMapping(value = "/book_edit")
-    public String saveEditBook(BookDto bookDto) {
-        bookService.update(bookDto.getId(), bookDto.getTitle(), bookDto.getAuthor().getId(), bookDto.getGenre().getId());
+    @PostMapping(value = "/book")
+    public String saveBook(@ModelAttribute("book") BookDto book) {
+        if (book.getId() == 0) {
+            bookService.create(book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
+        } else {
+            bookService.update(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
+        }
+
         return "redirect:/";
     }
 
-    @PostMapping(value = "/book_delete", params = "id")
-    public String deleteBook(@RequestParam("id") long id) {
+    @PostMapping(value = "/book/{id}/delete")
+    public String deleteBook(@PathVariable("id") long id) {
         bookService.deleteById(id);
         return "redirect:/";
     }
 
-    @GetMapping(value = "/book_new")
+    @GetMapping(value = "/book")
     public String bookNewPage(Model model) {
         List<AuthorDto> authors = authorService.findAll();
         List<GenreDto> genres = genreService.findAll();
@@ -67,12 +73,7 @@ public class BookController {
         model.addAttribute("book", bookDto);
         model.addAttribute("authors", authors);
         model.addAttribute("genres", genres);
-        return "book_new";
+        return "book_edit";
     }
 
-    @PostMapping(value = "/book_save")
-    public String saveNewBook(BookDto bookDto) {
-        bookService.insert(bookDto.getTitle(), bookDto.getAuthor().getId(), bookDto.getGenre().getId());
-        return "redirect:/";
-    }
 }

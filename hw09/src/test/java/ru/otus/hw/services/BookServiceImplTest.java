@@ -33,8 +33,8 @@ public class BookServiceImplTest {
 
     @DisplayName("должен добавить книгу")
     @Test
-    void shouldInsertBook() {
-        assertThatCode(() -> bookService.insert("new_book_title", 1, 1)).doesNotThrowAnyExceptionExcept();
+    void shouldCreateBook() {
+        assertThatCode(() -> bookService.create("new_book_title", 1, 1)).doesNotThrowAnyExceptionExcept();
     }
 
     @DisplayName("должен обновить книгу")

@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.BookDto;
-import ru.otus.hw.exceptions.EntityNotFoundException;
+import ru.otus.hw.exceptions.NotFoundException;
+import ru.otus.hw.mapper.BookMapper;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -25,22 +26,22 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto findById(long id) {
-        return BookDto.fromModel(getBook(id));
+        return BookMapper.fromModel(getBook(id));
     }
 
     @Override
     public List<BookDto> findAll() {
-        return bookRepository.findAll().stream().map(BookDto::fromModel).toList();
+        return bookRepository.findAll().stream().map(BookMapper::fromModel).toList();
     }
 
     @Override
     @Transactional
-    public BookDto insert(String title, long authorId, long genreId) {
+    public BookDto create(String title, long authorId, long genreId) {
         var author = getAuthor(authorId);
         var genre = getGenre(genreId);
         var book = new Book(0, title, author, genre);
         book = bookRepository.save(book);
-        return BookDto.fromModel(book);
+        return BookMapper.fromModel(book);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class BookServiceImpl implements BookService {
         book.setAuthor(author);
         book.setGenre(genre);
         book.setTitle(title);
-        return BookDto.fromModel(bookRepository.save(book));
+        return BookMapper.fromModel(bookRepository.save(book));
     }
 
     @Override
@@ -64,16 +65,16 @@ public class BookServiceImpl implements BookService {
 
     private Genre getGenre(long genreId) {
         return genreRepository.findById(genreId)
-                .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(genreId)));
+                .orElseThrow(() -> new NotFoundException("Genre with id %d not found".formatted(genreId)));
     }
 
     private Author getAuthor(long authorId) {
         return authorRepository.findById(authorId)
-                .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(authorId)));
+                .orElseThrow(() -> new NotFoundException("Author with id %d not found".formatted(authorId)));
     }
 
     private Book getBook(long id) {
         return bookRepository.findById(id).
-                orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
+                orElseThrow(() -> new NotFoundException("Book with id %d not found".formatted(id)));
     }
 }

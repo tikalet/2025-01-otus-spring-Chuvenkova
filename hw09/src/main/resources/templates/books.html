@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Library</title>
-    <link rel="stylesheet" href="book.css">
-    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" type="text/css" href="/book.css" />
+    <link rel="stylesheet" type="text/css" href="/common.css" />
 </head>
 <body>
 <h1>Welcome to the library!</h1>
@@ -28,10 +28,10 @@
             <a th:href="@{/comments(bookId=${book.id})}" href="comments.html" th:text="Show">Show</a>
         </div>
         <div class="book-container-edit">
-            <a th:href="@{/book(id=${book.id})}" href="book_edit.html" th:text="Edit">Edit</a>
+            <a th:href="@{/book/{id}(id=${book.id})}" href="book_edit.html" th:text="Edit">Edit</a>
         </div>
         <div class="book-container-delete">
-            <form th:action="@{/book_delete(id=${book.id})}" method="post">
+            <form th:action="@{/book/{id}/delete(id=${book.id})}" method="post">
                 <button type="submit" class="book-container-delete-button">Delete</button>
             </form>
         </div>
@@ -40,7 +40,7 @@
 </div>
 
 <div class="button-container">
-    <a th:href="@{/book_new}" href="book_new.html">
+    <a th:href="@{/book}" href="book_edit.html">
         <button type="button" th:text="Add">Add</button>
     </a>
 </div>
