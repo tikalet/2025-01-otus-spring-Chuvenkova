@@ -7,11 +7,11 @@ import ru.otus.hw.models.Author;
 @Component
 public class AuthorMapper {
 
-    public static AuthorDto fromModel(Author author) {
+    public AuthorDto fromModel(Author author) {
         return new AuthorDto(author.getId(), author.getFullName());
     }
 
-    public static Author toModel(AuthorDto authorDto) {
+    public Author toModel(AuthorDto authorDto) {
         return new Author(authorDto.getId(), authorDto.getFullName());
     }
 }

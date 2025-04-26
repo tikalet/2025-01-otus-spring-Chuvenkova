@@ -25,14 +25,16 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
 
+    private final BookMapper bookMapper;
+
     @Override
     public BookDto findById(long id) {
-        return BookMapper.fromModel(getBook(id));
+        return bookMapper.fromModel(getBook(id));
     }
 
     @Override
     public List<BookDto> findAll() {
-        return bookRepository.findAll().stream().map(BookMapper::fromModel).toList();
+        return bookRepository.findAll().stream().map(bookMapper::fromModel).toList();
     }
 
     @Override
@@ -42,7 +44,7 @@ public class BookServiceImpl implements BookService {
         var genre = getGenre(bookSaveDto.getGenreId());
         var book = new Book(0, bookSaveDto.getTitle(), author, genre);
         book = bookRepository.save(book);
-        return BookMapper.fromModel(book);
+        return bookMapper.fromModel(book);
     }
 
     @Override
@@ -55,7 +57,7 @@ public class BookServiceImpl implements BookService {
         book.setAuthor(author);
         book.setGenre(genre);
         book.setTitle(bookSaveDto.getTitle());
-        return BookMapper.fromModel(bookRepository.save(book));
+        return bookMapper.fromModel(bookRepository.save(book));
     }
 
     @Override

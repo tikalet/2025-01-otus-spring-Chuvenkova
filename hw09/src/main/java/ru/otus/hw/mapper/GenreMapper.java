@@ -7,11 +7,11 @@ import ru.otus.hw.models.Genre;
 @Component
 public class GenreMapper {
 
-    public static GenreDto fromModel(Genre genre) {
+    public GenreDto fromModel(Genre genre) {
         return new GenreDto(genre.getId(), genre.getName());
     }
 
-    public static Genre toModel(GenreDto genreDto) {
+    public Genre toModel(GenreDto genreDto) {
         return new Genre(genreDto.getId(), genreDto.getName());
     }
 }

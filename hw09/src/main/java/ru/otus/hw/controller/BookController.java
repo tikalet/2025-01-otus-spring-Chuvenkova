@@ -11,6 +11,7 @@ import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.BookSaveDto;
 import ru.otus.hw.dto.GenreDto;
+import ru.otus.hw.mapper.BookMapper;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
@@ -26,6 +27,8 @@ public class BookController {
 
     private final GenreService genreService;
 
+    private final BookMapper bookMapper;
+
     @GetMapping("/")
     public String mainPage(Model model) {
         List<BookDto> books = bookService.findAll();
@@ -39,10 +42,20 @@ public class BookController {
         List<AuthorDto> authors = authorService.findAll();
         List<GenreDto> genres = genreService.findAll();
 
-        model.addAttribute("book", book);
+        model.addAttribute("book", bookMapper.toBookSaveDto(book));
         model.addAttribute("authors", authors);
         model.addAttribute("genres", genres);
-        model.addAttribute("bookSave", new BookSaveDto());
+        return "book_edit";
+    }
+
+    @GetMapping(value = "/book")
+    public String bookNewPage(Model model) {
+        List<AuthorDto> authors = authorService.findAll();
+        List<GenreDto> genres = genreService.findAll();
+
+        model.addAttribute("book", new BookSaveDto());
+        model.addAttribute("authors", authors);
+        model.addAttribute("genres", genres);
         return "book_edit";
     }
 
@@ -61,22 +74,6 @@ public class BookController {
     public String deleteBook(@PathVariable("id") long id) {
         bookService.deleteById(id);
         return "redirect:/";
-    }
-
-    @GetMapping(value = "/book")
-    public String bookNewPage(Model model) {
-        List<AuthorDto> authors = authorService.findAll();
-        List<GenreDto> genres = genreService.findAll();
-
-        BookDto bookDto = new BookDto();
-        bookDto.setGenre(new GenreDto());
-        bookDto.setAuthor(new AuthorDto());
-
-        model.addAttribute("book", bookDto);
-        model.addAttribute("authors", authors);
-        model.addAttribute("genres", genres);
-        model.addAttribute("bookSave", new BookSaveDto());
-        return "book_edit";
     }
 
 }

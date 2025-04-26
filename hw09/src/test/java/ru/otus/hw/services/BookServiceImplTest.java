@@ -9,11 +9,14 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.BookSaveDto;
+import ru.otus.hw.mapper.AuthorMapper;
+import ru.otus.hw.mapper.BookMapper;
+import ru.otus.hw.mapper.GenreMapper;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 
 @DataJpaTest
-@Import({BookServiceImpl.class})
+@Import({BookServiceImpl.class, BookMapper.class, AuthorMapper.class, GenreMapper.class})
 @Transactional(propagation = Propagation.NEVER)
 public class BookServiceImplTest {
 

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.dto.AuthorDto;
@@ -11,6 +12,9 @@ import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.BookSaveDto;
 import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.exceptions.NotFoundException;
+import ru.otus.hw.mapper.AuthorMapper;
+import ru.otus.hw.mapper.BookMapper;
+import ru.otus.hw.mapper.GenreMapper;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
@@ -28,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("Контроллер для книг")
 @WebMvcTest(BookController.class)
+@Import({BookMapper.class, AuthorMapper.class, GenreMapper.class})
 public class BookControllerTest {
 
     @Autowired
@@ -41,6 +46,10 @@ public class BookControllerTest {
 
     @MockitoBean
     private GenreService genreService;
+
+    @Autowired
+    private BookMapper bookMapper;
+
 
     @DisplayName("должен отдать главную страницу с моделью")
     @Test
@@ -69,8 +78,7 @@ public class BookControllerTest {
 
         mvc.perform(get("/book/1"))
                 .andExpect(view().name("book_edit"))
-                .andExpect(model().attribute("book", bookDto))
-                .andExpect(model().attribute("bookSave", new BookSaveDto()))
+                .andExpect(model().attribute("book", bookMapper.toBookSaveDto(bookDto)))
                 .andExpect(model().attribute("authors", authorDtoList))
                 .andExpect(model().attribute("genres", genreDtoList));
     }
@@ -104,17 +112,13 @@ public class BookControllerTest {
     public void shouldRenderNewBookPageWithModel() throws Exception {
         List<AuthorDto> authorDtoList = createAuthorList();
         List<GenreDto> genreDtoList = createGenreList();
-        BookDto bookDto = new BookDto();
-        bookDto.setGenre(new GenreDto());
-        bookDto.setAuthor(new AuthorDto());
 
         when(authorService.findAll()).thenReturn(authorDtoList);
         when(genreService.findAll()).thenReturn(genreDtoList);
 
         mvc.perform(get("/book"))
                 .andExpect(view().name("book_edit"))
-                .andExpect(model().attribute("book", bookDto))
-                .andExpect(model().attribute("bookSave", new BookSaveDto()))
+                .andExpect(model().attribute("book", new BookSaveDto()))
                 .andExpect(model().attribute("authors", authorDtoList))
                 .andExpect(model().attribute("genres", genreDtoList));
     }
@@ -187,3 +191,4 @@ public class BookControllerTest {
         return genreDtoList;
     }
 }
+

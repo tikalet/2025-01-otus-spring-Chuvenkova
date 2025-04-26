@@ -13,10 +13,12 @@ import java.util.List;
 public class AuthorServiceImpl implements AuthorService {
     private final AuthorRepository authorRepository;
 
+    private final AuthorMapper authorMapper;
+
     @Override
     public List<AuthorDto> findAll() {
         return authorRepository.findAll().stream()
-                .map(AuthorMapper::fromModel).toList();
+                .map(authorMapper::fromModel).toList();
     }
 
 }
