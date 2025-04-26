@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.otus.hw.dto.CommentSaveDto;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 
@@ -34,13 +35,15 @@ public class CommentServiceImplTest {
     @DisplayName("должен добавить комментарий для книги")
     @Test
     void shouldCreateComment() {
-        assertThatCode(() -> commentService.create(1, "new_comment_text")).doesNotThrowAnyExceptionExcept();
+        CommentSaveDto commentSaveDto = new CommentSaveDto(0, "new_comment", 1);
+        assertThatCode(() -> commentService.create(commentSaveDto)).doesNotThrowAnyExceptionExcept();
     }
 
     @DisplayName("должен обновить комментарий для книги")
     @Test
     void shouldUpdateComment() {
-        assertThatCode(() -> commentService.update(1, "updated_comment_text")).doesNotThrowAnyExceptionExcept();
+        CommentSaveDto commentSaveDto = new CommentSaveDto(1, "updated_comment_text", 1);
+        assertThatCode(() -> commentService.update(commentSaveDto)).doesNotThrowAnyExceptionExcept();
     }
 
     @DisplayName("должен удалить комментарий")

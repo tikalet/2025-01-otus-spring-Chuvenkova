@@ -8,6 +8,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.CommentDto;
+import ru.otus.hw.dto.CommentSaveDto;
 import ru.otus.hw.services.CommentService;
 
 import java.util.ArrayList;
@@ -54,24 +55,30 @@ public class CommentControllerTest {
 
         mvc.perform(get("/comment/1"))
                 .andExpect(view().name("comment_edit"))
-                .andExpect(model().attribute("comment", commentDto));
+                .andExpect(model().attribute("comment", commentDto))
+                .andExpect(model().attribute("commentSave", new CommentSaveDto()));
     }
 
     @DisplayName("должен обновить комментарий и перенаправить на страницу с комментариями для книги")
     @Test
-    public void shouldSaveCommentAndRedirectCommentForBookPage() throws Exception {
-        List<CommentDto> commentDtoList = createCommentDtoList();
-        CommentDto commentDto = commentDtoList.get(0);
+    public void shouldSaveEditCommentAndRedirectCommentForBookPage() throws Exception {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(1);
         commentDto.setCommentText("updated_comment_text");
+        commentDto.setBook(new BookDto());
+        commentDto.getBook().setId(1);
 
-        when(commentService.update(commentDto.getId(), commentDto.getCommentText())).thenReturn(commentDto);
+        CommentSaveDto commentSaveDto = new CommentSaveDto(1, "updated_comment_text", 1);
+
+        when(commentService.update(commentSaveDto)).thenReturn(commentDto);
 
         mvc.perform(post("/comment")
                         .param("id", "1")
+                        .param("bookId", "1")
                         .param("commentText", "updated_comment_text"))
                 .andExpect(view().name("redirect:/comment/book/1"));
 
-        verify(commentService, times(1)).update(1L, "updated_comment_text");
+        verify(commentService, times(1)).update(commentSaveDto);
     }
 
     @DisplayName("должен удалить комментарий и перенаправить на страницу с комментариями для книги")
@@ -97,7 +104,8 @@ public class CommentControllerTest {
 
         mvc.perform(get("/comment/book/1/create"))
                 .andExpect(view().name("comment_edit"))
-                .andExpect(model().attribute("comment", commentDto));
+                .andExpect(model().attribute("comment", commentDto))
+                .andExpect(model().attribute("commentSave", new CommentSaveDto()));
     }
 
     @DisplayName("должен сохранить комментарий и перенаправить на страницу с комментариями для книги")
@@ -109,15 +117,17 @@ public class CommentControllerTest {
         commentDto.setBook(new BookDto());
         commentDto.getBook().setId(1);
 
-        when(commentService.create(commentDto.getId(), commentDto.getCommentText())).thenReturn(commentDto);
+        CommentSaveDto commentSaveDto = new CommentSaveDto(0, "new_comment", 1);
+
+        when(commentService.create(commentSaveDto)).thenReturn(commentDto);
 
         mvc.perform(post("/comment")
                         .param("id", "0")
-                        .param("book.id", "1")
+                        .param("bookId", "1")
                         .param("commentText", "new_comment"))
                 .andExpect(view().name("redirect:/comment/book/1"));
 
-        verify(commentService, times(1)).create(1L, "new_comment");
+        verify(commentService, times(1)).create(commentSaveDto);
     }
 
     private List<CommentDto> createCommentDtoList() {

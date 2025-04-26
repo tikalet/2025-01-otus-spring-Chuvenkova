@@ -8,6 +8,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.dto.BookSaveDto;
 import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.services.AuthorService;
@@ -69,26 +70,24 @@ public class BookControllerTest {
         mvc.perform(get("/book/1"))
                 .andExpect(view().name("book_edit"))
                 .andExpect(model().attribute("book", bookDto))
+                .andExpect(model().attribute("bookSave", new BookSaveDto()))
                 .andExpect(model().attribute("authors", authorDtoList))
                 .andExpect(model().attribute("genres", genreDtoList));
     }
 
     @DisplayName("должен обновить книгу и сделать redirect на главную страницу")
     @Test
-    public void shouldSaveBookAndRedirectMainPage() throws Exception {
-        List<BookDto> bookDtoList = createBookList();
-        BookDto bookDto = bookDtoList.get(0);
-        bookDto.setTitle("Title_new");
+    public void shouldSaveEditBookAndRedirectMainPage() throws Exception {
+        BookSaveDto bookSaveDto = new BookSaveDto(1, "Title_new", 1, 1);
 
         mvc.perform(post("/book")
                         .param("id", "1")
                         .param("title", "Title_new")
-                        .param("author.id", "1")
-                        .param("genre.id", "1"))
+                        .param("authorId", "1")
+                        .param("genreId", "1"))
                 .andExpect(view().name("redirect:/"));
 
-        verify(bookService, times(1))
-                .update(bookDto.getId(), bookDto.getTitle(), bookDto.getAuthor().getId(), bookDto.getGenre().getId());
+        verify(bookService, times(1)).update(bookSaveDto);
     }
 
     @DisplayName("должен удалить книгу и сделать redirect на главную страницу")
@@ -115,6 +114,7 @@ public class BookControllerTest {
         mvc.perform(get("/book"))
                 .andExpect(view().name("book_edit"))
                 .andExpect(model().attribute("book", bookDto))
+                .andExpect(model().attribute("bookSave", new BookSaveDto()))
                 .andExpect(model().attribute("authors", authorDtoList))
                 .andExpect(model().attribute("genres", genreDtoList));
     }
@@ -122,23 +122,16 @@ public class BookControllerTest {
     @DisplayName("должен создать книгу и сделать redirect на главную страницу")
     @Test
     public void shouldSaveNewBookAndRedirectMainPage() throws Exception {
-        BookDto bookDto = new BookDto();
-        bookDto.setId(0);
-        bookDto.setTitle("new book");
-        bookDto.setGenre(new GenreDto());
-        bookDto.getGenre().setId(2);
-        bookDto.setAuthor(new AuthorDto());
-        bookDto.getAuthor().setId(1);
+        BookSaveDto bookSaveDto = new BookSaveDto(0, "new_book_title", 1, 1);
 
         mvc.perform(post("/book")
                         .param("id", "0")
-                        .param("title", "new book")
-                        .param("author.id", "1")
-                        .param("genre.id", "2"))
+                        .param("title", "new_book_title")
+                        .param("authorId", "1")
+                        .param("genreId", "1"))
                 .andExpect(view().name("redirect:/"));
 
-        verify(bookService, times(1))
-                .create(bookDto.getTitle(), bookDto.getAuthor().getId(), bookDto.getGenre().getId());
+        verify(bookService, times(1)).create(bookSaveDto);
     }
 
     @DisplayName("Должен отдать страницу с ошибкой если будет NotFoundException")

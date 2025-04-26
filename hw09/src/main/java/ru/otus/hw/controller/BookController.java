@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.dto.BookSaveDto;
 import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
@@ -41,15 +42,16 @@ public class BookController {
         model.addAttribute("book", book);
         model.addAttribute("authors", authors);
         model.addAttribute("genres", genres);
+        model.addAttribute("bookSave", new BookSaveDto());
         return "book_edit";
     }
 
     @PostMapping(value = "/book")
-    public String saveBook(@ModelAttribute("book") BookDto book) {
-        if (book.getId() == 0) {
-            bookService.create(book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
+    public String saveBook(@ModelAttribute("bookSave") BookSaveDto bookSave) {
+        if (bookSave.getId() == 0) {
+            bookService.create(bookSave);
         } else {
-            bookService.update(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
+            bookService.update(bookSave);
         }
 
         return "redirect:/";
@@ -73,6 +75,7 @@ public class BookController {
         model.addAttribute("book", bookDto);
         model.addAttribute("authors", authors);
         model.addAttribute("genres", genres);
+        model.addAttribute("bookSave", new BookSaveDto());
         return "book_edit";
     }
 

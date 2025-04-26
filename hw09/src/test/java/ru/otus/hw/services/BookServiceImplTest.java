@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.otus.hw.dto.BookSaveDto;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 
@@ -34,13 +35,15 @@ public class BookServiceImplTest {
     @DisplayName("должен добавить книгу")
     @Test
     void shouldCreateBook() {
-        assertThatCode(() -> bookService.create("new_book_title", 1, 1)).doesNotThrowAnyExceptionExcept();
+        BookSaveDto bookSaveDto = new BookSaveDto(0, "new_book_title", 1, 1);
+        assertThatCode(() -> bookService.create(bookSaveDto)).doesNotThrowAnyExceptionExcept();
     }
 
     @DisplayName("должен обновить книгу")
     @Test
     void shouldUpdateBook() {
-        assertThatCode(() -> bookService.update(1, "update_book_title", 1, 1)).doesNotThrowAnyExceptionExcept();
+        BookSaveDto bookSaveDto = new BookSaveDto(1, "update_book_title", 1, 1);
+        assertThatCode(() -> bookService.update(bookSaveDto)).doesNotThrowAnyExceptionExcept();
     }
 
     @DisplayName("должен удалить книгу")

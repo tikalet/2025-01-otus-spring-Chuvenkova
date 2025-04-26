@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.dto.BookSaveDto;
 import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.mapper.BookMapper;
 import ru.otus.hw.models.Author;
@@ -36,24 +37,24 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public BookDto create(String title, long authorId, long genreId) {
-        var author = getAuthor(authorId);
-        var genre = getGenre(genreId);
-        var book = new Book(0, title, author, genre);
+    public BookDto create(BookSaveDto bookSaveDto) {
+        var author = getAuthor(bookSaveDto.getAuthorId());
+        var genre = getGenre(bookSaveDto.getGenreId());
+        var book = new Book(0, bookSaveDto.getTitle(), author, genre);
         book = bookRepository.save(book);
         return BookMapper.fromModel(book);
     }
 
     @Override
     @Transactional
-    public BookDto update(long id, String title, long authorId, long genreId) {
-        var book = getBook(id);
-        var author = getAuthor(authorId);
-        var genre = getGenre(genreId);
+    public BookDto update(BookSaveDto bookSaveDto) {
+        var book = getBook(bookSaveDto.getId());
+        var author = getAuthor(bookSaveDto.getAuthorId());
+        var genre = getGenre(bookSaveDto.getGenreId());
 
         book.setAuthor(author);
         book.setGenre(genre);
-        book.setTitle(title);
+        book.setTitle(bookSaveDto.getTitle());
         return BookMapper.fromModel(bookRepository.save(book));
     }
 

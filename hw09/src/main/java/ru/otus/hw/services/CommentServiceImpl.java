@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.CommentDto;
+import ru.otus.hw.dto.CommentSaveDto;
 import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.mapper.CommentMapper;
 import ru.otus.hw.models.Book;
@@ -38,19 +39,19 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public CommentDto create(long bookId, String commentText) {
-        var book = getBook(bookId);
-        var comment = new Comment(0, commentText, book);
+    public CommentDto create(CommentSaveDto commentSaveDto) {
+        var book = getBook(commentSaveDto.getBookId());
+        var comment = new Comment(0, commentSaveDto.getCommentText(), book);
         comment = commentRepository.save(comment);
         return CommentMapper.fromModel(comment);
     }
 
     @Override
     @Transactional
-    public CommentDto update(long id, String commentText) {
-        var comment = commentRepository.findById(id).
-                orElseThrow(() -> new NotFoundException("Comment with id %d not found".formatted(id)));
-        comment.setCommentText(commentText);
+    public CommentDto update(CommentSaveDto commentSaveDto) {
+        var comment = commentRepository.findById(commentSaveDto.getId()).orElseThrow(()
+                -> new NotFoundException("Comment with id %d not found".formatted(commentSaveDto.getId())));
+        comment.setCommentText(commentSaveDto.getCommentText());
         comment = commentRepository.save(comment);
         return CommentMapper.fromModel(comment);
     }
