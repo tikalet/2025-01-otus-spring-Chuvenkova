@@ -38,7 +38,7 @@ public class CommentControllerTest {
 
         when(commentService.findByBookId(1)).thenReturn(commentDtoList);
 
-        mvc.perform(get("/comments").param("bookId", "1"))
+        mvc.perform(get("/comment/book/1"))
                 .andExpect(view().name("comments"))
                 .andExpect(model().attribute("comments", commentDtoList))
                 .andExpect(model().attribute("bookId", 1L));
@@ -52,24 +52,26 @@ public class CommentControllerTest {
 
         when(commentService.findById(1)).thenReturn(commentDto);
 
-        mvc.perform(get("/comment").param("id", "1"))
+        mvc.perform(get("/comment/1"))
                 .andExpect(view().name("comment_edit"))
                 .andExpect(model().attribute("comment", commentDto));
     }
 
     @DisplayName("должен обновить комментарий и перенаправить на страницу с комментариями для книги")
     @Test
-    public void shouldSaveEditCommentAndRedirectCommentForBookPage() throws Exception {
+    public void shouldSaveCommentAndRedirectCommentForBookPage() throws Exception {
         List<CommentDto> commentDtoList = createCommentDtoList();
         CommentDto commentDto = commentDtoList.get(0);
         commentDto.setCommentText("updated_comment_text");
 
         when(commentService.update(commentDto.getId(), commentDto.getCommentText())).thenReturn(commentDto);
 
-        mvc.perform(post("/comment_edit")
+        mvc.perform(post("/comment")
                         .param("id", "1")
                         .param("commentText", "updated_comment_text"))
-                .andExpect(view().name("redirect:/comments?bookId=1"));
+                .andExpect(view().name("redirect:/comment/book/1"));
+
+        verify(commentService, times(1)).update(1L, "updated_comment_text");
     }
 
     @DisplayName("должен удалить комментарий и перенаправить на страницу с комментариями для книги")
@@ -80,9 +82,8 @@ public class CommentControllerTest {
 
         when(commentService.findById(1)).thenReturn(commentDto);
 
-        mvc.perform(post("/comment_delete")
-                        .param("id", "1"))
-                .andExpect(view().name("redirect:/comments?bookId=1"));
+        mvc.perform(post("/comment/1/delete"))
+                .andExpect(view().name("redirect:/comment/book/1"));
 
         verify(commentService, times(1)).deleteById(1);
     }
@@ -94,21 +95,29 @@ public class CommentControllerTest {
         commentDto.setBook(new BookDto());
         commentDto.getBook().setId(1L);
 
-        mvc.perform(get("/comment_new").param("bookId", "1"))
-                .andExpect(view().name("comment_new"))
-                .andExpect(model().attribute("comment", commentDto))
-                .andExpect(model().attribute("bookId", 1L));
+        mvc.perform(get("/comment/book/1/create"))
+                .andExpect(view().name("comment_edit"))
+                .andExpect(model().attribute("comment", commentDto));
     }
 
     @DisplayName("должен сохранить комментарий и перенаправить на страницу с комментариями для книги")
     @Test
     public void shouldSaveNewCommentAndRedirectCommentForBookPage() throws Exception {
-        mvc.perform(post("/comment_save")
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(1);
+        commentDto.setCommentText("new_comment");
+        commentDto.setBook(new BookDto());
+        commentDto.getBook().setId(1);
+
+        when(commentService.create(commentDto.getId(), commentDto.getCommentText())).thenReturn(commentDto);
+
+        mvc.perform(post("/comment")
+                        .param("id", "0")
                         .param("book.id", "1")
                         .param("commentText", "new_comment"))
-                .andExpect(view().name("redirect:/comments?bookId=1"));
+                .andExpect(view().name("redirect:/comment/book/1"));
 
-        verify(commentService, times(1)).insert(1L, "new_comment");
+        verify(commentService, times(1)).create(1L, "new_comment");
     }
 
     private List<CommentDto> createCommentDtoList() {

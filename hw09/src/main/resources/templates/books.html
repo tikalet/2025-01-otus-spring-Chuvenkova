@@ -25,7 +25,7 @@
         <div th:text="${book.author.fullName}" class="book-container-author">Author small book</div>
         <div th:text="${book.genre.name}" class="book-container-genre">Genre</div>
         <div class="book-container-comment">
-            <a th:href="@{/comments(bookId=${book.id})}" href="comments.html" th:text="Show">Show</a>
+            <a th:href="@{/comment/book/{id}(id=${book.id})}" href="comments.html" th:text="Show">Show</a>
         </div>
         <div class="book-container-edit">
             <a th:href="@{/book/{id}(id=${book.id})}" href="book_edit.html" th:text="Edit">Edit</a>

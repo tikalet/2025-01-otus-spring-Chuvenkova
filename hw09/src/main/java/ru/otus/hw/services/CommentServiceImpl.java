@@ -38,7 +38,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public CommentDto insert(long bookId, String commentText) {
+    public CommentDto create(long bookId, String commentText) {
         var book = getBook(bookId);
         var comment = new Comment(0, commentText, book);
         comment = commentRepository.save(comment);

@@ -9,7 +9,10 @@
 <body>
 <h2>Edit comment:</h2>
 
-<form id="comment-edit-form" action="comment_edit.html" th:action="@{/comment_edit(id=${comment.id})}" th:method="post">
+<form id="comment-edit-form" action="comment_edit.html" th:action="@{/comment}" th:method="post">
+    <input id="bookId" th:field="${comment.book.id}" type="hidden"/>
+    <input id="id" th:field="${comment.id}" type="hidden"/>
+
     <div class="comment-edit-row">
         <label for="comment-text-input" type="hidden"></label>
         <textarea id="comment-text-input" rows="10" name="comment" type="text" th:value="${comment.commentText}"
@@ -18,7 +21,7 @@
 
     <div class="comment-edit-row">
         <button type="submit" th:text="Save">Save</button>
-        <a href="comments.html" th:href="@{/comments(bookId=${comment.book.id})}">
+        <a href="comments.html" th:href="@{/comment/book/{id}(id=${comment.book.id})}">
             <button type="button" th:text="Cancel">Cancel</button>
         </a>
     </div>

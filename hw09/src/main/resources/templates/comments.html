@@ -13,10 +13,10 @@
     <div class="comment-container-data" th:each="comment : ${comments}">
         <div th:text="${comment.commentText}" class="comment-container-comment">comment</div>
         <div class="comment-container-edit">
-            <a th:href="@{/comment(id=${comment.id})}" href="comment_edit.html" th:text="Edit">Edit</a>
+            <a th:href="@{/comment/{id}(id=${comment.id})}" href="comment_edit.html" th:text="Edit">Edit</a>
         </div>
         <div class="comment-container-delete">
-            <form th:action="@{/comment_delete(id=${comment.id})}" method="post">
+            <form th:action="@{/comment/{id}/delete(id=${comment.id})}" method="post">
                 <button type="submit" class="comment-container-delete-button">Delete</button>
             </form>
         </div>
@@ -24,7 +24,7 @@
 </div>
 
 <div class="button-container">
-    <a href="comment_new.html" th:href="@{/comment_new(bookId=${bookId})}">
+    <a href="comment_edit.html" th:href="@{/comment/book/{id}/create(id=${bookId})}">
         <button type="button" th:text="Add">Add</button>
     </a>
 

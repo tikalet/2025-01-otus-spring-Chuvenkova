@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.CommentDto;
 import ru.otus.hw.services.CommentService;
@@ -17,48 +17,49 @@ import java.util.List;
 public class CommentController {
     private final CommentService commentService;
 
-    @GetMapping(value = "/comments", params = "bookId")
-    public String commentForBookPage(@RequestParam("bookId") long bookId, Model model) {
-        List<CommentDto> comments = commentService.findByBookId(bookId);
+    @GetMapping(value = "/comment/book/{id}")
+    public String commentForBookPage(@PathVariable("id") long id, Model model) {
+        List<CommentDto> comments = commentService.findByBookId(id);
         model.addAttribute("comments", comments);
-        model.addAttribute("bookId", bookId);
+        model.addAttribute("bookId", id);
         return "comments";
     }
 
-    @GetMapping(value = "/comment", params = "id")
-    public String commentEditPage(@RequestParam("id") long id, Model model) {
+    @GetMapping(value = "/comment/{id}")
+    public String commentEditPage(@PathVariable("id") long id, Model model) {
         CommentDto commentDto = commentService.findById(id);
         model.addAttribute("comment", commentDto);
         return "comment_edit";
     }
 
-    @PostMapping(value = "/comment_edit")
-    public String saveEditComment(CommentDto comment) {
-        CommentDto updatedCommentDto = commentService.update(comment.getId(), comment.getCommentText());
-        return "redirect:/comments?bookId=" + updatedCommentDto.getBook().getId();
+    @PostMapping(value = "/comment")
+    public String saveComment(CommentDto comment) {
+        CommentDto savedCommentDto = null;
+
+        if (comment.getId() == 0) {
+            savedCommentDto = commentService.create(comment.getBook().getId(), comment.getCommentText());
+        } else {
+            savedCommentDto = commentService.update(comment.getId(), comment.getCommentText());
+        }
+
+        return "redirect:/comment/book/" + savedCommentDto.getBook().getId();
     }
 
-    @PostMapping(value = "/comment_delete", params = "id")
-    public String deleteComment(@RequestParam("id") long id, Model model) {
+    @PostMapping(value = "/comment/{id}/delete")
+    public String deleteComment(@PathVariable("id") long id, Model model) {
         CommentDto commentDto = commentService.findById(id);
         commentService.deleteById(id);
-        return "redirect:/comments?bookId=" + commentDto.getBook().getId();
+        return "redirect:/comment/book/" + commentDto.getBook().getId();
     }
 
-    @GetMapping(value = "/comment_new", params = "bookId")
-    public String commentNewPage(@RequestParam("bookId") long bookId, Model model) {
+    @GetMapping(value = "/comment/book/{id}/create")
+    public String commentNewPage(@PathVariable("id") long id, Model model) {
         CommentDto commentDto = new CommentDto();
         commentDto.setBook(new BookDto());
-        commentDto.getBook().setId(bookId);
+        commentDto.getBook().setId(id);
 
         model.addAttribute("comment", commentDto);
-        model.addAttribute("bookId", bookId);
-        return "comment_new";
+        return "comment_edit";
     }
 
-    @PostMapping(value = "/comment_save")
-    public String saveNewComment(CommentDto commentDto) {
-        commentService.insert(commentDto.getBook().getId(), commentDto.getCommentText());
-        return "redirect:/comments?bookId=" + commentDto.getBook().getId();
-    }
 }

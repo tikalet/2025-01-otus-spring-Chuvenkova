@@ -33,8 +33,8 @@ public class CommentServiceImplTest {
 
     @DisplayName("должен добавить комментарий для книги")
     @Test
-    void shouldInsertComment() {
-        assertThatCode(() -> commentService.insert(1, "new_comment_text")).doesNotThrowAnyExceptionExcept();
+    void shouldCreateComment() {
+        assertThatCode(() -> commentService.create(1, "new_comment_text")).doesNotThrowAnyExceptionExcept();
     }
 
     @DisplayName("должен обновить комментарий для книги")
