@@ -9,11 +9,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.CommentSaveDto;
+import ru.otus.hw.mapper.CommentMapper;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 
 @DataJpaTest
-@Import({CommentServiceImpl.class})
+@Import({CommentServiceImpl.class, CommentMapper.class})
 @Transactional(propagation = Propagation.NEVER)
 public class CommentServiceImplTest {
 

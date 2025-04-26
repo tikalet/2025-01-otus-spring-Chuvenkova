@@ -42,7 +42,7 @@ public class BookController {
         List<AuthorDto> authors = authorService.findAll();
         List<GenreDto> genres = genreService.findAll();
 
-        model.addAttribute("book", bookMapper.toBookSaveDto(book));
+        model.addAttribute("book", bookMapper.toSaveDto(book));
         model.addAttribute("authors", authors);
         model.addAttribute("genres", genres);
         return "book_edit";

@@ -78,7 +78,7 @@ public class BookControllerTest {
 
         mvc.perform(get("/book/1"))
                 .andExpect(view().name("book_edit"))
-                .andExpect(model().attribute("book", bookMapper.toBookSaveDto(bookDto)))
+                .andExpect(model().attribute("book", bookMapper.toSaveDto(bookDto)))
                 .andExpect(model().attribute("authors", authorDtoList))
                 .andExpect(model().attribute("genres", genreDtoList));
     }

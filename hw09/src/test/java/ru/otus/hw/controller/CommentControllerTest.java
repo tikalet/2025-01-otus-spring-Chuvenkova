@@ -4,11 +4,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.CommentDto;
 import ru.otus.hw.dto.CommentSaveDto;
+import ru.otus.hw.mapper.CommentMapper;
 import ru.otus.hw.services.CommentService;
 
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("Контроллер для комментарив")
 @WebMvcTest(CommentController.class)
+@Import({CommentMapper.class})
 public class CommentControllerTest {
 
     @Autowired
@@ -31,6 +34,9 @@ public class CommentControllerTest {
 
     @MockitoBean
     private CommentService commentService;
+
+    @Autowired
+    private CommentMapper commentMapper;
 
     @DisplayName("должен отдать страницу с комментариями для книги с моделью")
     @Test
@@ -55,8 +61,7 @@ public class CommentControllerTest {
 
         mvc.perform(get("/comment/1"))
                 .andExpect(view().name("comment_edit"))
-                .andExpect(model().attribute("comment", commentDto))
-                .andExpect(model().attribute("commentSave", new CommentSaveDto()));
+                .andExpect(model().attribute("comment", commentMapper.toSaveDto(commentDto)));
     }
 
     @DisplayName("должен обновить комментарий и перенаправить на страницу с комментариями для книги")
@@ -98,14 +103,12 @@ public class CommentControllerTest {
     @DisplayName("должен отдать страницу для создания комментария с моделью")
     @Test
     public void shouldRenderNewCommentPageWithModel() throws Exception {
-        CommentDto commentDto = new CommentDto();
-        commentDto.setBook(new BookDto());
-        commentDto.getBook().setId(1L);
+        CommentSaveDto commentSaveDto = new CommentSaveDto();
+        commentSaveDto.setBookId(1L);
 
         mvc.perform(get("/comment/book/1/create"))
                 .andExpect(view().name("comment_edit"))
-                .andExpect(model().attribute("comment", commentDto))
-                .andExpect(model().attribute("commentSave", new CommentSaveDto()));
+                .andExpect(model().attribute("comment", commentSaveDto));
     }
 
     @DisplayName("должен сохранить комментарий и перенаправить на страницу с комментариями для книги")

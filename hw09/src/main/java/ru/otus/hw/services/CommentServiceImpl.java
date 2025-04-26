@@ -23,10 +23,12 @@ public class CommentServiceImpl implements CommentService {
 
     private final BookRepository bookRepository;
 
+    private final CommentMapper commentMapper;
+
     @Override
     public CommentDto findById(long id) {
         Optional<Comment> comment = commentRepository.findById(id);
-        return comment.map(CommentMapper::fromModel).orElseThrow(()
+        return comment.map(commentMapper::fromModel).orElseThrow(()
                 -> new NotFoundException("Comment with id %d not found".formatted(id)));
     }
 
@@ -34,7 +36,7 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentDto> findByBookId(long bookId) {
         getBook(bookId);
         return commentRepository.findByBookId(bookId).stream()
-                .map(CommentMapper::fromModel).toList();
+                .map(commentMapper::fromModel).toList();
     }
 
     @Override
@@ -43,7 +45,7 @@ public class CommentServiceImpl implements CommentService {
         var book = getBook(commentSaveDto.getBookId());
         var comment = new Comment(0, commentSaveDto.getCommentText(), book);
         comment = commentRepository.save(comment);
-        return CommentMapper.fromModel(comment);
+        return commentMapper.fromModel(comment);
     }
 
     @Override
@@ -53,7 +55,7 @@ public class CommentServiceImpl implements CommentService {
                 -> new NotFoundException("Comment with id %d not found".formatted(commentSaveDto.getId())));
         comment.setCommentText(commentSaveDto.getCommentText());
         comment = commentRepository.save(comment);
-        return CommentMapper.fromModel(comment);
+        return commentMapper.fromModel(comment);
     }
 
     @Override

@@ -3,13 +3,14 @@ package ru.otus.hw.mapper;
 import org.springframework.stereotype.Component;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.CommentDto;
+import ru.otus.hw.dto.CommentSaveDto;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 
 @Component
 public class CommentMapper {
 
-    public static CommentDto fromModel(Comment comment) {
+    public CommentDto fromModel(Comment comment) {
         CommentDto commentDto = new CommentDto();
         commentDto.setCommentText(comment.getCommentText());
         commentDto.setId(comment.getId());
@@ -18,7 +19,7 @@ public class CommentMapper {
         return commentDto;
     }
 
-    public static Comment toModel(CommentDto commentDto) {
+    public Comment toModel(CommentDto commentDto) {
         Comment comment = new Comment();
         comment.setCommentText(commentDto.getCommentText());
         comment.setId(commentDto.getId());
@@ -27,4 +28,11 @@ public class CommentMapper {
         return comment;
     }
 
+    public CommentSaveDto toSaveDto(CommentDto commentDto) {
+        CommentSaveDto commentSaveDto = new CommentSaveDto();
+        commentSaveDto.setCommentText(commentDto.getCommentText());
+        commentSaveDto.setId(commentDto.getId());
+        commentSaveDto.setBookId(commentDto.getBook().getId());
+        return commentSaveDto;
+    }
 }

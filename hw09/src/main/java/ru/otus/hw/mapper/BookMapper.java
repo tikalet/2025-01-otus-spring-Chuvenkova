@@ -26,7 +26,7 @@ public class BookMapper {
                 genreMapper.toModel(bookDto.getGenre()));
     }
 
-    public BookSaveDto toBookSaveDto(BookDto bookDto) {
+    public BookSaveDto toSaveDto(BookDto bookDto) {
         return new BookSaveDto(bookDto.getId(), bookDto.getTitle(),
                 bookDto.getAuthor().getId(),
                 bookDto.getGenre().getId());
