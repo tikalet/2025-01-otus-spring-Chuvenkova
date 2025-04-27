@@ -133,6 +133,18 @@ public class CommentControllerTest {
         verify(commentService, times(1)).create(commentSaveDto);
     }
 
+    @DisplayName("должен сделать redirect на страницу редактирования из-за пустого комментария")
+    @Test
+    public void shouldNotSaveBookWithEmptyTitleAndRedirectEditPage() throws Exception {
+        CommentSaveDto commentSaveDto = new CommentSaveDto(1, "", 1);
+
+        mvc.perform(post("/comment"))
+                .andExpect(model().attributeHasFieldErrorCode("comment", "commentText", "NotBlank"))
+                .andExpect(view().name("comment_edit"));
+
+        verify(commentService, times(0)).update(commentSaveDto);
+    }
+
     private List<CommentDto> createCommentDtoList() {
         List<CommentDto> commentDtoList = new ArrayList<>();
 

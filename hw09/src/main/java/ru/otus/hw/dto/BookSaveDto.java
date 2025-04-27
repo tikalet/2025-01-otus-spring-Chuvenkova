@@ -14,7 +14,7 @@ public class BookSaveDto {
     private long id;
 
     @NotBlank(message = "The title should not be empty")
-    @Size(min = 1, max = 254, message = "Max symbols are 254")
+    @Size(min = 0, max = 254, message = "Max symbols are 254")
     private String title;
 
     private long authorId;

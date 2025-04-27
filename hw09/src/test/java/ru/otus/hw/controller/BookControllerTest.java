@@ -146,6 +146,34 @@ public class BookControllerTest {
                 .andExpect(view().name("error"));
     }
 
+    @DisplayName("должен сделать redirect на страницу редактирования из-за пустого заголовка книги")
+    @Test
+    public void shouldNotSaveBookWithEmptyTitleAndRedirectEditPage() throws Exception {
+        BookSaveDto bookSaveDto = new BookSaveDto(1, "", 1, 1);
+
+        mvc.perform(post("/book")
+                        .param("title", ""))
+                .andExpect(model().attributeHasFieldErrorCode("book", "title", "NotBlank"))
+                .andExpect(view().name("book_edit"));
+
+        verify(bookService, times(0)).update(bookSaveDto);
+    }
+
+    @DisplayName("должен сделать redirect на страницу редактирования из-за длинного заголовка книги")
+    @Test
+    public void shouldNotSaveBookWithLongTitleAndRedirectEditPage() throws Exception {
+        String longString = ".".repeat(300);
+
+        BookSaveDto bookSaveDto = new BookSaveDto(1, longString, 1, 1);
+
+        mvc.perform(post("/book")
+                        .param("title", longString))
+                .andExpect(model().attributeHasFieldErrorCode("book", "title", "Size"))
+                .andExpect(view().name("book_edit"));
+
+        verify(bookService, times(0)).update(bookSaveDto);
+    }
+
     private List<BookDto> createBookList() {
         List<BookDto> bookDtoList = new ArrayList<>();
 
