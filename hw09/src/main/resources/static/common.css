@@ -13,3 +13,9 @@ button {
     flex-direction: row;
     margin-top: 10px;
 }
+
+.error-value {
+    color: red;
+    display: flex;
+    margin-left: 10px;
+}

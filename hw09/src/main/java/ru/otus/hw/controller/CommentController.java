@@ -1,9 +1,12 @@
 package ru.otus.hw.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import ru.otus.hw.dto.CommentDto;
@@ -37,7 +40,14 @@ public class CommentController {
     }
 
     @PostMapping(value = "/comment")
-    public String saveComment(CommentSaveDto commentSaveDto) {
+    public String saveComment(@Valid @ModelAttribute("comment") CommentSaveDto commentSaveDto,
+                              BindingResult bindingResult, Model model) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("comment", commentSaveDto);
+            return "comment_edit";
+        }
+
         CommentDto savedCommentDto = null;
 
         if (commentSaveDto.getId() == 0) {

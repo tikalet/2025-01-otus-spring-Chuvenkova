@@ -1,8 +1,10 @@
 package ru.otus.hw.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -60,11 +62,20 @@ public class BookController {
     }
 
     @PostMapping(value = "/book")
-    public String saveBook(@ModelAttribute("bookSave") BookSaveDto bookSave) {
-        if (bookSave.getId() == 0) {
-            bookService.create(bookSave);
+    public String saveBook(@Valid @ModelAttribute("book") BookSaveDto book, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            List<AuthorDto> authors = authorService.findAll();
+            List<GenreDto> genres = genreService.findAll();
+            model.addAttribute("book", book);
+            model.addAttribute("authors", authors);
+            model.addAttribute("genres", genres);
+            return "book_edit";
+        }
+
+        if (book.getId() == 0) {
+            bookService.create(book);
         } else {
-            bookService.update(bookSave);
+            bookService.update(book);
         }
 
         return "redirect:/";
