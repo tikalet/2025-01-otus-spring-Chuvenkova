@@ -1,4 +1,4 @@
-package ru.otus.hw.event;
+package ru.otus.hw.events;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
