@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorDto> handeNotFoundException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorDto> handeMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         System.out.println("ERROR: " + ex.toString());
 
         List<ObjectError> allErrors = ex.getBindingResult().getAllErrors();

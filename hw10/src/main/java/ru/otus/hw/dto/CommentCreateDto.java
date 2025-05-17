@@ -15,7 +15,7 @@ public class CommentCreateDto {
     @Null
     private Long id;
 
-    @NotBlank(message = "The comment should not be empty.")
+    @NotBlank(message = "The comment should not be empty")
     private String commentText;
 
     @NotNull
