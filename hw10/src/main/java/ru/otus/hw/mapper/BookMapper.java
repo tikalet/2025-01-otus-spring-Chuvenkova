@@ -2,7 +2,6 @@ package ru.otus.hw.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.models.Book;
 
@@ -26,9 +25,4 @@ public class BookMapper {
                 genreMapper.toModel(bookDto.getGenre()));
     }
 
-    public BookCreateDto toSaveDto(BookDto bookDto) {
-        return new BookCreateDto(bookDto.getId(), bookDto.getTitle(),
-                bookDto.getAuthor().getId(),
-                bookDto.getGenre().getId());
-    }
 }

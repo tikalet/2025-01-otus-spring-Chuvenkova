@@ -37,7 +37,7 @@ public class CommentServiceImplTest {
     @DisplayName("должен добавить комментарий для книги")
     @Test
     void shouldCreateComment() {
-        CommentCreateDto commentCreateDto = new CommentCreateDto(0L, "new_comment", 1L);
+        CommentCreateDto commentCreateDto = new CommentCreateDto("new_comment", 1L);
         assertThatCode(() -> commentService.create(commentCreateDto)).doesNotThrowAnyExceptionExcept();
     }
 

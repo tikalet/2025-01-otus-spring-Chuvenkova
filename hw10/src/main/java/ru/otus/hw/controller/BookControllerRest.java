@@ -2,6 +2,7 @@ package ru.otus.hw.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +37,10 @@ public class BookControllerRest {
     @PostMapping("/api/book")
     public ResponseEntity<BookDto> createBook(@Valid @RequestBody BookCreateDto bookCreateDto) {
         var bookDto = bookService.create(bookCreateDto);
-        return ResponseEntity.ok(bookDto);
+        return new ResponseEntity<BookDto>(bookDto, HttpStatus.CREATED);
+//        return ResponseEntity.created(
+//                ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(bookDto.getId()).toUri()
+//        ).build();
     }
 
     @PutMapping("/api/book")
@@ -46,8 +50,8 @@ public class BookControllerRest {
     }
 
     @DeleteMapping("/api/book/{id}")
-    public ResponseEntity<String> deleteBook(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteBook(@PathVariable("id") Long id) {
         bookService.deleteById(id);
-        return ResponseEntity.ok("OK");
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 }

@@ -39,7 +39,7 @@ public class BookServiceImplTest {
     @DisplayName("должен добавить книгу")
     @Test
     void shouldCreateBook() {
-        BookCreateDto bookCreateDto = new BookCreateDto(0L, "new_book_title", 1L, 1L);
+        BookCreateDto bookCreateDto = new BookCreateDto("new_book_title", 1L, 1L);
         assertThatCode(() -> bookService.create(bookCreateDto)).doesNotThrowAnyExceptionExcept();
     }
 

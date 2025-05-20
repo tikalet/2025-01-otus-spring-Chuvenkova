@@ -75,7 +75,7 @@ public class CommentControllerRestTest {
         bookDto.setId(1);
         CommentDto commentDto = new CommentDto(1, "new_comment", bookDto);
 
-        CommentCreateDto commentCreateDto = new CommentCreateDto(null, "new_comment", 1L);
+        CommentCreateDto commentCreateDto = new CommentCreateDto("new_comment", 1L);
 
         when(commentService.create(commentCreateDto)).thenReturn(commentDto);
 
@@ -91,7 +91,7 @@ public class CommentControllerRestTest {
     @DisplayName("должен при создании комментария вернуть ошибку, если комментарий пустой")
     @Test
     public void shouldReturnErrorEmptyCommentForCreateComment() throws Exception {
-        CommentCreateDto commentCreateDto = new CommentCreateDto(null, null, 1L);
+        CommentCreateDto commentCreateDto = new CommentCreateDto(null, 1L);
         String expectedResult = mapper.writeValueAsString(commentCreateDto);
 
         ErrorDto errorDto = new ErrorDto(400, "The comment should not be empty");
@@ -124,15 +124,14 @@ public class CommentControllerRestTest {
     }
 
 
+    @DisplayName("должен удалить комментарий")
+    @Test
+    public void shouldDeleteComment() throws Exception {
+        mvc.perform(delete("/api/comment/1"))
+                .andExpect(status().isOk());
 
-      @DisplayName("должен удалить комментарий")
-      @Test
-      public void shouldDeleteComment() throws Exception {
-          mvc.perform(delete("/api/comment/1"))
-                  .andExpect(status().isOk());
-
-          verify(commentService, times(1)).deleteById(1);
-      }
+        verify(commentService, times(1)).deleteById(1);
+    }
 
 
     private List<CommentDto> createCommentDtoList() {

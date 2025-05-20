@@ -83,7 +83,7 @@ public class BookControllerRestTest {
     @DisplayName("должен создать книгу")
     @Test
     public void shouldCreateBook() throws Exception {
-        BookCreateDto bookCreateDto = new BookCreateDto(null, "new_book_title", 1L, 1L);
+        BookCreateDto bookCreateDto = new BookCreateDto("new_book_title", 1L, 1L);
 
         BookDto bookDto = new BookDto(10L, "new_book_title",
                 new AuthorDto(1L, "Author"), new GenreDto(1L, "Genre"));
@@ -95,14 +95,14 @@ public class BookControllerRestTest {
         mvc.perform(post("/api/book")
                         .contentType(APPLICATION_JSON)
                         .content(expectedResult))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().json(mapper.writeValueAsString(bookDto)));
     }
 
     @DisplayName("должен при создании книги вернуть ошибку, если заголовок пустой")
     @Test
     public void shouldReturnErrorEmptyTitleForCreateBook() throws Exception {
-        BookCreateDto bookCreateDto = new BookCreateDto(null, null, 1L, 1L);
+        BookCreateDto bookCreateDto = new BookCreateDto(null, 1L, 1L);
         String expectedResult = mapper.writeValueAsString(bookCreateDto);
 
         ErrorDto errorDto = new ErrorDto(400, "The title should not be empty");
@@ -118,7 +118,7 @@ public class BookControllerRestTest {
     @Test
     public void shouldReturnErrorLongTitleForCreateBook() throws Exception {
         String longString = ".".repeat(300);
-        BookCreateDto bookCreateDto = new BookCreateDto(null, longString, 1L, 1L);
+        BookCreateDto bookCreateDto = new BookCreateDto(longString, 1L, 1L);
         String expectedResult = mapper.writeValueAsString(bookCreateDto);
 
         ErrorDto errorDto = new ErrorDto(400, "The title must contain from 3 to 254 characters");
@@ -153,7 +153,7 @@ public class BookControllerRestTest {
     @Test
     public void shouldDeleteBookAndRedirectMainPage() throws Exception {
         mvc.perform(delete("/api/book/1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         verify(bookService, times(1)).deleteById(1);
     }
