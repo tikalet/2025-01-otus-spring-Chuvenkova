@@ -1,0 +1,81 @@
+.book-container {
+	display: flex;
+	width: 760px;
+	height: 300px;
+	overflow-y: scroll;
+	flex-direction: column;
+	background-color: #FFF;
+}
+
+.book-container-header {
+	display: flex;
+	flex-direction: row;
+	background-color: #333;
+	height: 18px;
+	font-weight: bold;
+	text-align: center;
+	color: #FFF;
+}
+
+.book-container-header > div:not(:last-child) {
+	border-right: 1px solid #FFF;
+}
+
+.book-container-data {
+	display: flex;
+	flex-direction: row;
+	min-height: 18px;
+}
+
+.book-container-data:nth-child(2n) {
+	background-color: #DDD;
+}
+
+.book-container-data > div:not(:last-child) {
+	border-right: 1px solid #FFF;
+}
+
+.book-container-title {
+	width: 230px;
+	min-height: 18px;
+	padding-left: 5px;
+}
+
+.book-container-author {
+	width: 170px;
+	min-height: 18px;
+	padding-left: 5px;
+}
+
+.book-container-genre {
+	width: 100px;
+	min-height: 18px;
+	padding-left: 5px;
+}
+
+.book-container-comment {
+	width: 80px;
+	min-height: 18px;
+	text-align: center;
+}
+
+.book-container-edit {
+	width: 80px;
+	min-height: 18px;
+	text-align: center;
+}
+
+.book-container-delete {
+	width: 80px;
+	min-height: 18px;
+	text-align: center;
+}
+
+.book-container-delete-button {
+	margin-right: 0;
+	padding: 0;
+	border: 0;
+	background-color: transparent;
+	text-decoration-line: underline;
+	color: #00E;
+}
