@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -16,6 +16,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.otus.hw.controller.BookController;
 import ru.otus.hw.dto.BookSaveDto;
 import ru.otus.hw.mapper.BookMapper;
+import ru.otus.hw.models.Authority;
+import ru.otus.hw.models.User;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
@@ -50,17 +52,64 @@ public class BookControllerSecurityTest {
     @MockitoBean
     private BookMapper bookMapper;
 
-    @DisplayName("должен проверить корректность возвращаемого статуса")
-    @ParameterizedTest(name = "{4} для метода {0} {1} c пользователем {2}")
-    @MethodSource("createTestData")
-    void shouldVerifyCorrectnessUrlAndUserAndReturnedStatus(String httpMethod, String url,
-                                                            String user, List<SimpleGrantedAuthority> authorityList,
+
+    @DisplayName("должен проверить для главной страницы корректность возвращаемого статуса")
+    @ParameterizedTest(name = "{2} для пользователя {0}")
+    @MethodSource("createTestDataForMainPage")
+    void shouldVerifyCorrectReturnedStatusForMainPage(String user, List<GrantedAuthority> authorityList,
+                                                      int status) throws Exception {
+
+        var request = MockMvcRequestBuilders.get("/");
+
+        checkStatusAndRedirect(user, authorityList, status, request);
+    }
+
+    @DisplayName("должен проверить для страницы создания корректность возвращаемого статуса")
+    @ParameterizedTest(name = "{2} для пользователя {0}")
+    @MethodSource("createTestDataForEditCreateSaveBook")
+    void shouldVerifyCorrectReturnedStatusForCreateBookPage(String user, List<GrantedAuthority> authorityList,
                                                             int status) throws Exception {
+
+        var request = MockMvcRequestBuilders.get("/book");
+
+        checkStatusAndRedirect(user, authorityList, status, request);
+    }
+
+    @DisplayName("должен проверить для страницы редактирования корректность возвращаемого статуса")
+    @ParameterizedTest(name = "{2} для пользователя {0}")
+    @MethodSource("createTestDataForEditCreateSaveBook")
+    void shouldVerifyCorrectReturnedStatusForEditBookPage(String user, List<GrantedAuthority> authorityList,
+                                                          int status) throws Exception {
+
         when(bookMapper.toSaveDto(any())).thenReturn(new BookSaveDto(1, "title", 1, 1));
 
-        var request = createRequest(httpMethod, url);
-        assert request != null;
+        var request = MockMvcRequestBuilders.get("/book/1");
 
+        checkStatusAndRedirect(user, authorityList, status, request);
+    }
+
+    @DisplayName("должен проверить при сохранении корректность возвращаемого статуса")
+    @ParameterizedTest(name = "{2} для пользователя {0}")
+    @MethodSource("createTestDataForEditCreateSaveBook")
+    void shouldVerifyCorrectReturnedStatusForSaveBook(String user, List<GrantedAuthority> authorityList,
+                                                      int status) throws Exception {
+        var request = MockMvcRequestBuilders.post("/book");
+
+        checkStatusAndRedirect(user, authorityList, status, request);
+    }
+
+    @DisplayName("должен проверить при удалении корректность возвращаемого статуса")
+    @ParameterizedTest(name = "{2} для пользователя {0}")
+    @MethodSource("createTestDataForDeleteBook")
+    void shouldVerifyCorrectReturnedStatusForDeleteBook(String user, List<GrantedAuthority> authorityList,
+                                                        int status) throws Exception {
+        var request = MockMvcRequestBuilders.post("/book/1/delete");
+
+        checkStatusAndRedirect(user, authorityList, status, request);
+    }
+
+    private void checkStatusAndRedirect(String user, List<GrantedAuthority> authorityList, int status,
+                                        MockHttpServletRequestBuilder request) throws Exception {
         if (user != null) {
             request = request.with(user(user).authorities(authorityList));
         }
@@ -72,40 +121,38 @@ public class BookControllerSecurityTest {
         }
     }
 
-    private MockHttpServletRequestBuilder createRequest(String httpMethod, String url) {
-        if (httpMethod.equals("get")) {
-            return MockMvcRequestBuilders.get(url);
-        } else if (httpMethod.equals("post")) {
-            return MockMvcRequestBuilders.post(url);
-        }
-
-        return null;
-    }
-
-
-    public static Stream<Arguments> createTestData() {
-        var libUser = "lib";
-        var libAuthorityList = List.of(new SimpleGrantedAuthority("BOOK_EDITOR"));
-
-        var userUser = "user";
-        var userAuthorityList = List.of(new SimpleGrantedAuthority("COMMENT_EDITOR"));
+    public static Stream<Arguments> createTestDataForMainPage() {
+        var libUser = new User("lib", List.of(new Authority("BOOK_EDITOR")));
+        var userUser = new User("user", List.of(new Authority("COMMENT_EDITOR")));
 
         return Stream.of(
-                Arguments.of("get", "/", null, null, 302),
-                Arguments.of("get", "/", libUser, libAuthorityList, 200),
-                Arguments.of("get", "/", userUser, userAuthorityList, 200),
-                Arguments.of("get", "/book/1", null, null, 302),
-                Arguments.of("get", "/book/1", libUser, libAuthorityList, 200),
-                Arguments.of("get", "/book/1", userUser, userAuthorityList, 403),
-                Arguments.of("get", "/book", null, null, 302),
-                Arguments.of("get", "/book", libUser, libAuthorityList, 200),
-                Arguments.of("get", "/book", userUser, userAuthorityList, 403),
-                Arguments.of("post", "/book", null, null, 302),
-                Arguments.of("post", "/book", libUser, libAuthorityList, 200),
-                Arguments.of("post", "/book", userUser, userAuthorityList, 403),
-                Arguments.of("post", "/book/1/delete", null, null, 302),
-                Arguments.of("post", "/book/1/delete", libUser, libAuthorityList, 302),
-                Arguments.of("post", "/book/1/delete", userUser, userAuthorityList, 403)
+                Arguments.of(null, null, 302),
+                Arguments.of(libUser.getUsername(), libUser.getAuthorityList(), 200),
+                Arguments.of(userUser.getUsername(), userUser.getAuthorityList(), 200)
         );
     }
+
+    public static Stream<Arguments> createTestDataForEditCreateSaveBook() {
+        var libUser = new User("lib", List.of(new Authority("BOOK_EDITOR")));
+        var userUser = new User("user", List.of(new Authority("COMMENT_EDITOR")));
+
+        return Stream.of(
+                Arguments.of(null, null, 302),
+                Arguments.of(libUser.getUsername(), libUser.getAuthorityList(), 200),
+                Arguments.of(userUser.getUsername(), userUser.getAuthorityList(), 403)
+        );
+    }
+
+
+    public static Stream<Arguments> createTestDataForDeleteBook() {
+        var libUser = new User("lib", List.of(new Authority("BOOK_EDITOR")));
+        var userUser = new User("user", List.of(new Authority("COMMENT_EDITOR")));
+
+        return Stream.of(
+                Arguments.of(null, null, 302),
+                Arguments.of(libUser.getUsername(), libUser.getAuthorityList(), 302),
+                Arguments.of(userUser.getUsername(), userUser.getAuthorityList(), 403)
+        );
+    }
+
 }

@@ -45,4 +45,8 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "authority_id"))
     private List<Authority> authorityList;
 
+    public User(String username, List<Authority> authorityList) {
+        this.username = username;
+        this.authorityList = authorityList;
+    }
 }

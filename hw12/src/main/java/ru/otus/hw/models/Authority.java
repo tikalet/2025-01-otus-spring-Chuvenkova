@@ -27,4 +27,8 @@ public class Authority implements GrantedAuthority {
 
     @Column(name = "authority")
     private String authority;
+
+    public Authority(String authority) {
+        this.authority = authority;
+    }
 }

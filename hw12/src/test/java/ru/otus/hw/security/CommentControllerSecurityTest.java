@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -18,6 +18,8 @@ import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.CommentDto;
 import ru.otus.hw.dto.CommentSaveDto;
 import ru.otus.hw.mapper.CommentMapper;
+import ru.otus.hw.models.Authority;
+import ru.otus.hw.models.User;
 import ru.otus.hw.services.CommentService;
 
 import java.util.List;
@@ -44,19 +46,68 @@ public class CommentControllerSecurityTest {
     @MockitoBean
     private CommentMapper commentMapper;
 
-    @DisplayName("должен проверить корректность возвращаемого статуса")
-    @ParameterizedTest(name = "{4} для метода {0} {1} c пользователем {2}")
-    @MethodSource("createTestData")
-    void shouldVerifyCorrectnessUrlAndUserAndReturnedStatus(String httpMethod, String url,
-                                                            String user, List<SimpleGrantedAuthority> authorityList,
-                                                            int status) throws Exception {
+
+    @DisplayName("должен проверить для страницы комментариев для книги корректность возвращаемого статуса")
+    @ParameterizedTest(name = "{2} для пользователя {0}")
+    @MethodSource("createTestDataForMainPage")
+    void shouldVerifyCorrectReturnedStatusForMainPage(String user, List<GrantedAuthority> authorityList,
+                                                      int status) throws Exception {
+
+        var request = MockMvcRequestBuilders.get("/comment/book/1");
+
+        checkStatusAndRedirect(user, authorityList, status, request);
+    }
+
+    @DisplayName("должен проверить для страницы редактирования корректность возвращаемого статуса")
+    @ParameterizedTest(name = "{2} для пользователя {0}")
+    @MethodSource("createTestDataForEditCreateSave")
+    void shouldVerifyCorrectReturnedStatusForEditPage(String user, List<GrantedAuthority> authorityList,
+                                                      int status) throws Exception {
 
         when(commentMapper.toSaveDto(any())).thenReturn(new CommentSaveDto(1, "comment", 1));
+
+        var request = MockMvcRequestBuilders.get("/comment/1");
+
+        checkStatusAndRedirect(user, authorityList, status, request);
+    }
+
+    @DisplayName("должен проверить для страницы создания корректность возвращаемого статуса")
+    @ParameterizedTest(name = "{2} для пользователя {0}")
+    @MethodSource("createTestDataForEditCreateSave")
+    void shouldVerifyCorrectReturnedStatusForCreatePage(String user, List<GrantedAuthority> authorityList,
+                                                        int status) throws Exception {
+
+        var request = MockMvcRequestBuilders.get("/comment/book/1/create");
+
+        checkStatusAndRedirect(user, authorityList, status, request);
+    }
+
+    @DisplayName("должен проверить для сохранения корректность возвращаемого статуса")
+    @ParameterizedTest(name = "{2} для пользователя {0}")
+    @MethodSource("createTestDataForEditCreateSave")
+    void shouldVerifyCorrectReturnedStatusForSavePage(String user, List<GrantedAuthority> authorityList,
+                                                      int status) throws Exception {
+
+        var request = MockMvcRequestBuilders.post("/comment");
+
+        checkStatusAndRedirect(user, authorityList, status, request);
+    }
+
+    @DisplayName("должен проверить для удаления корректность возвращаемого статуса")
+    @ParameterizedTest(name = "{2} для пользователя {0}")
+    @MethodSource("createTestDataForDelete")
+    void shouldVerifyCorrectReturnedStatusForDeletePage(String user, List<GrantedAuthority> authorityList,
+                                                        int status) throws Exception {
+
         when(commentService.findById(1)).thenReturn(new CommentDto(1, "comment", new BookDto()));
 
-        var request = createRequest(httpMethod, url);
-        assert request != null;
+        var request = MockMvcRequestBuilders.post("/comment/1/delete");
 
+        checkStatusAndRedirect(user, authorityList, status, request);
+    }
+
+    private void checkStatusAndRedirect(String user, List<GrantedAuthority> authorityList, int status,
+                                        MockHttpServletRequestBuilder request) throws Exception {
         if (user != null) {
             request = request.with(user(user).authorities(authorityList));
         }
@@ -68,40 +119,36 @@ public class CommentControllerSecurityTest {
         }
     }
 
-    private MockHttpServletRequestBuilder createRequest(String httpMethod, String url) {
-        if (httpMethod.equals("get")) {
-            return MockMvcRequestBuilders.get(url);
-        } else if (httpMethod.equals("post")) {
-            return MockMvcRequestBuilders.post(url);
-        }
-
-        return null;
-    }
-
-
-    public static Stream<Arguments> createTestData() {
-        var libUser = "lib";
-        var libAuthorityList = List.of(new SimpleGrantedAuthority("BOOK_EDITOR"));
-
-        var userUser = "user";
-        var userAuthorityList = List.of(new SimpleGrantedAuthority("COMMENT_EDITOR"));
+    public static Stream<Arguments> createTestDataForMainPage() {
+        var libUser = new User("lib", List.of(new Authority("BOOK_EDITOR")));
+        var userUser = new User("user", List.of(new Authority("COMMENT_EDITOR")));
 
         return Stream.of(
-                Arguments.of("get", "/comment/book/1", null, null, 302),
-                Arguments.of("get", "/comment/book/1", libUser, libAuthorityList, 200),
-                Arguments.of("get", "/comment/book/1", userUser, userAuthorityList, 200),
-                Arguments.of("get", "/comment/1", null, null, 302),
-                Arguments.of("get", "/comment/1", libUser, libAuthorityList, 403),
-                Arguments.of("get", "/comment/1", userUser, userAuthorityList, 200),
-                Arguments.of("get", "/comment/book/1/create", null, null, 302),
-                Arguments.of("get", "/comment/book/1/create", libUser, libAuthorityList, 403),
-                Arguments.of("get", "/comment/book/1/create", userUser, userAuthorityList, 200),
-                Arguments.of("post", "/comment", null, null, 302),
-                Arguments.of("post", "/comment", libUser, libAuthorityList, 403),
-                Arguments.of("post", "/comment", userUser, userAuthorityList, 200),
-                Arguments.of("post", "/comment/1/delete", null, null, 302),
-                Arguments.of("post", "/comment/1/delete", libUser, libAuthorityList, 403),
-                Arguments.of("post", "/comment/1/delete", userUser, userAuthorityList, 302)
+                Arguments.of(null, null, 302),
+                Arguments.of(libUser.getUsername(), libUser.getAuthorityList(), 200),
+                Arguments.of(userUser.getUsername(), userUser.getAuthorityList(), 200)
+        );
+    }
+
+    public static Stream<Arguments> createTestDataForEditCreateSave() {
+        var libUser = new User("lib", List.of(new Authority("BOOK_EDITOR")));
+        var userUser = new User("user", List.of(new Authority("COMMENT_EDITOR")));
+
+        return Stream.of(
+                Arguments.of(null, null, 302),
+                Arguments.of(libUser.getUsername(), libUser.getAuthorityList(), 403),
+                Arguments.of(userUser.getUsername(), userUser.getAuthorityList(), 200)
+        );
+    }
+
+    public static Stream<Arguments> createTestDataForDelete() {
+        var libUser = new User("lib", List.of(new Authority("BOOK_EDITOR")));
+        var userUser = new User("user", List.of(new Authority("COMMENT_EDITOR")));
+
+        return Stream.of(
+                Arguments.of(null, null, 302),
+                Arguments.of(libUser.getUsername(), libUser.getAuthorityList(), 403),
+                Arguments.of(userUser.getUsername(), userUser.getAuthorityList(), 302)
         );
     }
 }
