@@ -22,5 +22,45 @@ values ('BOOK_EDITOR'),
 
 insert into user_authority_link(user_id, authority_id)
 values
-       (1, 2), -- user - COMMENT_EDITOR
-       (2, 1); -- lib - BOOK_EDITOR
+       (2, 1), -- lib - BOOK_EDITOR
+       (2, 2); -- lib - COMMENT_EDITOR
+
+INSERT INTO acl_sid (principal, sid)
+VALUES
+    (1, 'user'), -- 1
+    (1, 'lib'), -- 2
+    (0, 'COMMENT_EDITOR'); -- 3
+
+INSERT INTO acl_class (class)
+VALUES ('ru.otus.hw.models.Comment');
+
+INSERT INTO acl_object_identity (object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting)
+VALUES
+    (1, 1, NULL, 1, 0), -- 1
+    (1, 2, NULL, 1, 0), -- 2
+    (1, 3, NULL, 1, 0), -- 3
+    (1, 4, NULL, 2, 0), -- 4
+    (1, 5, NULL, 2, 0), -- 5
+    (1, 6, NULL, 2, 0); -- 6
+
+INSERT INTO acl_entry (acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure)
+VALUES
+    (1, 1, 1, 1, 1, 1, 1),
+    (1, 2, 1, 2, 1, 1, 1),
+    (1, 3, 3, 1, 1, 1, 1),
+    (2, 1, 1, 1, 1, 1, 1),
+    (2, 2, 1, 2, 1, 1, 1),
+    (2, 3, 3, 1, 1, 1, 1),
+    (3, 1, 1, 1, 1, 1, 1),
+    (3, 2, 1, 2, 1, 1, 1),
+    (3, 3, 3, 1, 1, 1, 1),
+    (4, 1, 2, 1, 1, 1, 1),
+    (4, 2, 2, 2, 1, 1, 1),
+    (4, 3, 3, 1, 1, 1, 1),
+    (5, 1, 2, 1, 1, 1, 1),
+    (5, 2, 2, 2, 1, 1, 1),
+    (5, 3, 3, 1, 1, 1, 1),
+    (6, 1, 2, 1, 1, 1, 1),
+    (6, 2, 2, 2, 1, 1, 1),
+    (6, 3, 3, 1, 1, 1, 1);
+

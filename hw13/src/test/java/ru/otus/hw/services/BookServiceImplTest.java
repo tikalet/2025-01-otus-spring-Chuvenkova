@@ -15,6 +15,7 @@ import ru.otus.hw.mapper.GenreMapper;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 
+@DisplayName("Сервис книг ")
 @DataJpaTest
 @Import({BookServiceImpl.class, BookMapper.class, AuthorMapper.class, GenreMapper.class})
 @Transactional(propagation = Propagation.NEVER)

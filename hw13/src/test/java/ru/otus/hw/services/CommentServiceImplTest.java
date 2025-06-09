@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.CommentSaveDto;
@@ -13,6 +14,7 @@ import ru.otus.hw.mapper.CommentMapper;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 
+@DisplayName("Сервис комментариев ")
 @DataJpaTest
 @Import({CommentServiceImpl.class, CommentMapper.class})
 @Transactional(propagation = Propagation.NEVER)
@@ -20,6 +22,9 @@ public class CommentServiceImplTest {
 
     @Autowired
     private CommentServiceImpl commentService;
+
+    @MockitoBean
+    private AclServiceWrapperServiceImpl aclServiceWrapperService;
 
     @DisplayName("должен загружать комментарий по id")
     @Test

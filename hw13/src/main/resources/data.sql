@@ -37,9 +37,9 @@ VALUES ('ru.otus.hw.models.Comment');
 
 INSERT INTO acl_object_identity (object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting)
 VALUES
-    (1, 1, NULL, 3, 0), -- 1
-    (1, 2, NULL, 3, 0), -- 2
-    (1, 3, NULL, 3, 0), -- 3
+    (1, 1, NULL, 1, 0), -- 1
+    (1, 2, NULL, 1, 0), -- 2
+    (1, 3, NULL, 1, 0), -- 3
     (1, 4, NULL, 2, 0), -- 4
     (1, 5, NULL, 2, 0), -- 5
     (1, 6, NULL, 2, 0); -- 6
