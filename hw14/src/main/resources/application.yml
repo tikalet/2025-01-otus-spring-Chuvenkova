@@ -23,7 +23,11 @@ spring:
       enabled: true
     noninteractive:
       enabled: false
-      
+
+  batch:
+    job:
+      enabled: true
+
 mongock:
   runner-type: "InitializingBean"
   change-logs-scan-package:
