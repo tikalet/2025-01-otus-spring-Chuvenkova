@@ -54,7 +54,7 @@ public class JobConfig {
 
     @Bean
     public Job migrateJob(Flow authorGenreAsyncFlow, Step transformBookStep, Step transformCommentStep) {
-        return new JobBuilder("migrate_job", jobRepository)
+        return new JobBuilder("migrateJob", jobRepository)
                 .incrementer(new RunIdIncrementer())
                 .start(authorGenreAsyncFlow)
                 .next(transformBookStep)
