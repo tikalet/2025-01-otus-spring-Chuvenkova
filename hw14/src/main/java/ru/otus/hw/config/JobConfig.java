@@ -25,12 +25,15 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.transaction.PlatformTransactionManager;
 import ru.otus.hw.models.mongo.MongoAuthor;
 import ru.otus.hw.models.mongo.MongoBook;
+import ru.otus.hw.models.mongo.MongoComment;
 import ru.otus.hw.models.mongo.MongoGenre;
 import ru.otus.hw.models.relation.Author;
 import ru.otus.hw.models.relation.Book;
+import ru.otus.hw.models.relation.Comment;
 import ru.otus.hw.models.relation.Genre;
 import ru.otus.hw.processor.AuthorMigrateService;
 import ru.otus.hw.processor.BookMigrateService;
+import ru.otus.hw.processor.CommentMigrateService;
 import ru.otus.hw.processor.GenreMigrateService;
 
 import java.util.HashMap;
@@ -50,11 +53,12 @@ public class JobConfig {
     private EntityManagerFactory entityManagerFactory;
 
     @Bean
-    public Job migrateJob(Flow authorGenreAsyncFlow, Step transformBookStep) {
+    public Job migrateJob(Flow authorGenreAsyncFlow, Step transformBookStep, Step transformCommentStep) {
         return new JobBuilder("migrate_job", jobRepository)
                 .incrementer(new RunIdIncrementer())
                 .start(authorGenreAsyncFlow)
                 .next(transformBookStep)
+                .next(transformCommentStep)
                 .build()
                 .build();
     }
@@ -99,6 +103,19 @@ public class JobConfig {
                 .build();
     }
 
+    @StepScope
+    @Bean
+    public MongoPagingItemReader<MongoComment> commentReader(MongoOperations mongoOperations) {
+        return new MongoPagingItemReaderBuilder<MongoComment>()
+                .name("commentReader")
+                .template(mongoOperations)
+                .jsonQuery("{}")
+                .targetType(MongoComment.class)
+                .pageSize(CONVERT_ITEM_SIZE)
+                .sorts(new HashMap<>())
+                .build();
+    }
+
     // Processor
     @StepScope
     @Bean
@@ -116,6 +133,12 @@ public class JobConfig {
     @Bean
     public ItemProcessor<MongoBook, Book> bookProcessor(BookMigrateService bookMigrateService) {
         return bookMigrateService::save;
+    }
+
+    @StepScope
+    @Bean
+    public ItemProcessor<MongoComment, Comment> commentProcessor(CommentMigrateService commentMigrateService) {
+        return commentMigrateService::save;
     }
 
     // Writer
@@ -139,6 +162,14 @@ public class JobConfig {
     @Bean
     public JpaItemWriter<Book> bookWriter() {
         return new JpaItemWriterBuilder<Book>()
+                .entityManagerFactory(entityManagerFactory)
+                .build();
+    }
+
+    @StepScope
+    @Bean
+    public JpaItemWriter<Comment> coomentWriter() {
+        return new JpaItemWriterBuilder<Comment>()
                 .entityManagerFactory(entityManagerFactory)
                 .build();
     }
@@ -189,7 +220,6 @@ public class JobConfig {
                 .build();
     }
 
-
     @Bean
     public Step transformBookStep(ItemReader<MongoBook> bookReader, JpaItemWriter<Book> bookWriter,
                                   ItemProcessor<MongoBook, Book> bookProcessor) {
@@ -201,5 +231,14 @@ public class JobConfig {
                 .build();
     }
 
-
+    @Bean
+    public Step transformCommentStep(ItemReader<MongoComment> reader, JpaItemWriter<Comment> writer,
+                                     ItemProcessor<MongoComment, Comment> processor) {
+        return new StepBuilder("transformBookStep", jobRepository)
+                .<MongoComment, Comment>chunk(CONVERT_ITEM_SIZE, platformTransactionManager)
+                .reader(reader)
+                .processor(processor)
+                .writer(writer)
+                .build();
+    }
 }
