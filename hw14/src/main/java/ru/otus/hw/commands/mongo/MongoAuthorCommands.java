@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import ru.otus.hw.converters.mongo.MongoAuthorConverter;
-import ru.otus.hw.services.mongo.MongoAuthorService;
+import ru.otus.hw.repositories.mongo.MongoAuthorRepository;
 
 import java.util.stream.Collectors;
 
@@ -12,13 +12,13 @@ import java.util.stream.Collectors;
 @ShellComponent(value = "Mongo author commands")
 public class MongoAuthorCommands {
 
-    private final MongoAuthorService mongoAuthorService;
+    private final MongoAuthorRepository mongoAuthorRepository;
 
     private final MongoAuthorConverter mongoAuthorConverter;
 
     @ShellMethod(value = "Find all authors", key = "mo-aa")
     public String findAllAuthors() {
-        return mongoAuthorService.findAll().stream()
+        return mongoAuthorRepository.findAll().stream()
                 .map(mongoAuthorConverter::authorToString)
                 .collect(Collectors.joining("," + System.lineSeparator()));
     }

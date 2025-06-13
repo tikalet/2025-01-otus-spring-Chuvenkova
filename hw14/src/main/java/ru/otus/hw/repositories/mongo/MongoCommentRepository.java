@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface MongoCommentRepository extends MongoRepository<MongoComment, String> {
 
-    List<MongoComment> findByBook(@Param("book") String book);
+    List<MongoComment> findByBookId(@Param("bookId") String bookId);
 }
