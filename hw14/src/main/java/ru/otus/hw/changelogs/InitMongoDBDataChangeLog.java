@@ -14,9 +14,16 @@ import ru.otus.hw.repositories.mongo.MongoGenreRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @ChangeLog(order = "001")
 public class InitMongoDBDataChangeLog {
+
+    private static final int AUTHOR_SIZE = 15;
+
+    private static final int GENRE_SIZE = 5;
+
+    private static final int COMMENT_MAX_SIZE = 10;
 
     private List<MongoGenre> genreList;
 
@@ -33,7 +40,7 @@ public class InitMongoDBDataChangeLog {
     public void initGenre(MongoGenreRepository genreRepository) {
         genreList = new ArrayList<MongoGenre>();
 
-        for (int num = 0; num < 3; num++) {
+        for (int num = 0; num < GENRE_SIZE; num++) {
             MongoGenre genre = genreRepository.save(new MongoGenre("Mongo_Genre_" + num));
             genreList.add(genre);
         }
@@ -43,7 +50,7 @@ public class InitMongoDBDataChangeLog {
     public void initAuthor(MongoAuthorRepository authorRepository) {
         authorList = new ArrayList<MongoAuthor>();
 
-        for (int num = 0; num < 3; num++) {
+        for (int num = 0; num < AUTHOR_SIZE; num++) {
             MongoAuthor author = authorRepository.save(new MongoAuthor("Mongo_Author_" + num));
             authorList.add(author);
         }
@@ -53,9 +60,12 @@ public class InitMongoDBDataChangeLog {
     public void initBook(MongoBookRepository bookRepository) {
         bookList = new ArrayList<MongoBook>();
 
-        for (int num = 0; num < 3; num++) {
+        for (int num = 0; num < 10; num++) {
+            var author = authorList.get(new Random().nextInt(0, AUTHOR_SIZE));
+            var genre = genreList.get(new Random().nextInt(0, GENRE_SIZE));
+
             MongoBook book = bookRepository.save(new MongoBook("Mongo_Title_" + num,
-                    authorList.get(num), genreList.get(num)));
+                    author, genre));
             bookList.add(book);
         }
     }
@@ -63,7 +73,9 @@ public class InitMongoDBDataChangeLog {
     @ChangeSet(order = "004", id = "initComment", author = "mongock", runAlways = true)
     public void initComment(MongoCommentRepository commentRepository) {
         for (MongoBook book : bookList) {
-            for (int num = 0; num < 3; num++) {
+            int size = new Random().nextInt(0, COMMENT_MAX_SIZE);
+
+            for (int num = 0; num < size; num++) {
                 commentRepository.save(new MongoComment("Mongo_comment_" + num + "_for_" + book.getTitle(), book));
             }
         }

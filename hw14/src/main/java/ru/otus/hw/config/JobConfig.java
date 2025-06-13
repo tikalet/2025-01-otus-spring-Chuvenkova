@@ -239,6 +239,7 @@ public class JobConfig {
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)
+                .taskExecutor(new SimpleAsyncTaskExecutor())
                 .build();
     }
 }
