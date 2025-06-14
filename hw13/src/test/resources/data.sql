@@ -32,7 +32,7 @@ VALUES
     (0, 'COMMENT_EDITOR'); -- 3
 
 INSERT INTO acl_class (class)
-VALUES ('ru.otus.hw.models.Comment');
+VALUES ('ru.otus.hw.dto.CommentDto');
 
 INSERT INTO acl_object_identity (object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting)
 VALUES

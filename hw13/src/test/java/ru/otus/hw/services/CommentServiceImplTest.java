@@ -9,6 +9,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.dto.CommentDto;
 import ru.otus.hw.dto.CommentSaveDto;
 import ru.otus.hw.mapper.CommentMapper;
 
@@ -48,14 +50,25 @@ public class CommentServiceImplTest {
     @DisplayName("должен обновить комментарий для книги")
     @Test
     void shouldUpdateComment() {
-        CommentSaveDto commentSaveDto = new CommentSaveDto(1, "updated_comment_text", 1);
-        assertThatCode(() -> commentService.update(commentSaveDto)).doesNotThrowAnyExceptionExcept();
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(1);
+        commentDto.setCommentText("updated_comment_text");
+        commentDto.setBook(new BookDto());
+        commentDto.getBook().setId(1);
+
+        assertThatCode(() -> commentService.update(commentDto)).doesNotThrowAnyExceptionExcept();
     }
 
     @DisplayName("должен удалить комментарий")
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void shouldDeleteComment() {
-        assertThatCode(() -> commentService.deleteById(1)).doesNotThrowAnyExceptionExcept();
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(1);
+        commentDto.setCommentText("text");
+        commentDto.setBook(new BookDto());
+        commentDto.getBook().setId(1);
+
+        assertThatCode(() -> commentService.delete(commentDto)).doesNotThrowAnyExceptionExcept();
     }
 }

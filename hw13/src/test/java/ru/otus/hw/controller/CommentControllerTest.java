@@ -75,9 +75,7 @@ public class CommentControllerTest {
         commentDto.setBook(new BookDto());
         commentDto.getBook().setId(1);
 
-        CommentSaveDto commentSaveDto = new CommentSaveDto(1, "updated_comment_text", 1);
-
-        when(commentService.update(commentSaveDto)).thenReturn(commentDto);
+        when(commentService.update(commentDto)).thenReturn(commentDto);
 
         mvc.perform(post("/comment")
                         .param("id", "1")
@@ -85,7 +83,7 @@ public class CommentControllerTest {
                         .param("commentText", "updated_comment_text"))
                 .andExpect(view().name("redirect:/comment/book/1"));
 
-        verify(commentService, times(1)).update(commentSaveDto);
+        verify(commentService, times(1)).update(commentDto);
     }
 
     @DisplayName("должен удалить комментарий и перенаправить на страницу с комментариями для книги")
@@ -99,7 +97,7 @@ public class CommentControllerTest {
         mvc.perform(post("/comment/1/delete"))
                 .andExpect(view().name("redirect:/comment/book/1"));
 
-        verify(commentService, times(1)).deleteById(1);
+        verify(commentService, times(1)).delete(commentDto);
     }
 
     @DisplayName("должен отдать страницу для создания комментария с моделью")
@@ -138,13 +136,17 @@ public class CommentControllerTest {
     @DisplayName("должен сделать redirect на страницу редактирования из-за пустого комментария")
     @Test
     public void shouldNotSaveBookWithEmptyTitleAndRedirectEditPage() throws Exception {
-        CommentSaveDto commentSaveDto = new CommentSaveDto(1, "", 1);
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(1);
+        commentDto.setCommentText("new_comment");
+        commentDto.setBook(new BookDto());
+        commentDto.getBook().setId(1);
 
         mvc.perform(post("/comment"))
                 .andExpect(model().attributeHasFieldErrorCode("comment", "commentText", "NotBlank"))
                 .andExpect(view().name("comment_edit"));
 
-        verify(commentService, times(0)).update(commentSaveDto);
+        verify(commentService, times(0)).update(commentDto);
     }
 
     private List<CommentDto> createCommentDtoList() {

@@ -63,7 +63,7 @@ public class CommentController {
     @PostMapping(value = "/comment/{id}/delete")
     public String deleteComment(@PathVariable("id") long id, Model model) {
         CommentDto commentDto = commentService.findById(id);
-        commentService.deleteById(commentDto);
+        commentService.delete(commentDto);
         return "redirect:/comment/book/" + commentDto.getBook().getId();
     }
 

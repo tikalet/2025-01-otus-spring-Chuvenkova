@@ -70,7 +70,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     @PreAuthorize("hasPermission(#commentDto, 'write')")
-    public void deleteById(CommentDto commentDto) {
+    public void delete(CommentDto commentDto) {
         commentRepository.deleteById(commentDto.getId());
     }
 

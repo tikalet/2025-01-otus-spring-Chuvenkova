@@ -1,16 +1,21 @@
 package ru.otus.hw.security;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
+import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.dto.CommentDto;
 import ru.otus.hw.mapper.CommentMapper;
 import ru.otus.hw.services.AclServiceWrapperServiceImpl;
 import ru.otus.hw.services.CommentServiceImpl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 
 @DisplayName("Безопасность. Сервис комментариев ")
 @DataJpaTest
@@ -52,4 +57,81 @@ public class CommentServiceImplSecurityTest {
         assertThat(commentService.findByBookId(2)).isNotNull().isNotEmpty().hasSize(2);
     }
 
+    @DisplayName("для user и книги [1] успешно обновится комментарий, который раньше делал user")
+    @WithMockUser(username = "user", authorities = {})
+    @Test()
+    void shouldUpdateCommentTest1() {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(1);
+        commentDto.setCommentText("text");
+        commentDto.setBook(new BookDto());
+        commentDto.getBook().setId(1);
+
+        assertThatCode(() -> commentService.update(commentDto)).doesNotThrowAnyExceptionExcept();
+    }
+
+    @DisplayName("для user и книги [2] при обновлении комментария будет ошибка 403")
+    @WithMockUser(username = "user", authorities = {})
+    @Test()
+    void shouldUpdateCommentTest2() {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(4);
+        commentDto.setCommentText("text");
+        commentDto.setBook(new BookDto());
+        commentDto.getBook().setId(2);
+
+        Assertions.assertThrows(AuthorizationDeniedException.class, () -> commentService.update(commentDto));
+    }
+
+    @DisplayName("для lib и книги [1] успешно обновится комментарий, который раньше делал user")
+    @WithMockUser(username = "lib", authorities = {"BOOK_EDITOR", "COMMENT_EDITOR"})
+    @Test()
+    void shouldUpdateCommentTest3() {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(1);
+        commentDto.setCommentText("text");
+        commentDto.setBook(new BookDto());
+        commentDto.getBook().setId(1);
+
+        assertThatCode(() -> commentService.update(commentDto)).doesNotThrowAnyExceptionExcept();
+    }
+
+    @DisplayName("для user и книги [1] успешно удалить комментарий, который раньше делал user")
+    @WithMockUser(username = "user", authorities = {})
+    @Test()
+    void shouldDeleteCommentTest1() {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(1);
+        commentDto.setCommentText("text");
+        commentDto.setBook(new BookDto());
+        commentDto.getBook().setId(1);
+
+        assertThatCode(() -> commentService.delete(commentDto)).doesNotThrowAnyExceptionExcept();
+    }
+
+    @DisplayName("для user и книги [2] при удалении комментария будет ошибка 403")
+    @WithMockUser(username = "user", authorities = {})
+    @Test()
+    void shouldDeleteCommentTest2() {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(4);
+        commentDto.setCommentText("text");
+        commentDto.setBook(new BookDto());
+        commentDto.getBook().setId(2);
+
+        Assertions.assertThrows(AuthorizationDeniedException.class, () -> commentService.delete(commentDto));
+    }
+
+    @DisplayName("для lib и книги [1] при удалении комментария будет ошибка 403")
+    @WithMockUser(username = "lib", authorities = {"BOOK_EDITOR", "COMMENT_EDITOR"})
+    @Test()
+    void shouldDeleteCommentTest3() {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(1);
+        commentDto.setCommentText("text");
+        commentDto.setBook(new BookDto());
+        commentDto.getBook().setId(1);
+
+        Assertions.assertThrows(AuthorizationDeniedException.class, () -> commentService.delete(commentDto));
+    }
 }
