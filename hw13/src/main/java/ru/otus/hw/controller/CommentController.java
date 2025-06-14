@@ -53,7 +53,8 @@ public class CommentController {
         if (commentSaveDto.getId() == 0) {
             savedCommentDto = commentService.create(commentSaveDto);
         } else {
-            savedCommentDto = commentService.update(commentSaveDto);
+            CommentDto commentDto = commentMapper.fromSaveDtoToDto(commentSaveDto);
+            savedCommentDto = commentService.update(commentDto);
         }
 
         return "redirect:/comment/book/" + savedCommentDto.getBook().getId();
@@ -62,7 +63,7 @@ public class CommentController {
     @PostMapping(value = "/comment/{id}/delete")
     public String deleteComment(@PathVariable("id") long id, Model model) {
         CommentDto commentDto = commentService.findById(id);
-        commentService.deleteById(id);
+        commentService.deleteById(commentDto);
         return "redirect:/comment/book/" + commentDto.getBook().getId();
     }
 

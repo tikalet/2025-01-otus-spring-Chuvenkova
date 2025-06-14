@@ -1,7 +1,8 @@
 package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.CommentDto;
@@ -36,6 +37,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @PostFilter("hasPermission(filterObject, 'read')")
     public List<CommentDto> findByBookId(long bookId) {
         getBook(bookId);
         return commentRepository.findByBookId(bookId).stream()
@@ -48,24 +50,28 @@ public class CommentServiceImpl implements CommentService {
         var book = getBook(commentSaveDto.getBookId());
         var comment = new Comment(0, commentSaveDto.getCommentText(), book);
         var savedComment = commentRepository.save(comment);
-        aclServiceWrapperService.createPermission(savedComment, BasePermission.READ);
-        return commentMapper.fromModel(savedComment);
+
+        CommentDto commentDto = commentMapper.fromModel(savedComment);
+        aclServiceWrapperService.createReadAndWritePermission(commentDto);
+        return commentDto;
     }
 
     @Override
     @Transactional
-    public CommentDto update(CommentSaveDto commentSaveDto) {
-        var comment = commentRepository.findById(commentSaveDto.getId()).orElseThrow(()
-                -> new NotFoundException("Comment with id %d not found".formatted(commentSaveDto.getId())));
-        comment.setCommentText(commentSaveDto.getCommentText());
+    @PreAuthorize("hasAuthority('COMMENT_EDITOR') || hasPermission(#commentDto, 'write')")
+    public CommentDto update(CommentDto commentDto) {
+        var comment = commentRepository.findById(commentDto.getId()).orElseThrow(()
+                -> new NotFoundException("Comment with id %d not found".formatted(commentDto.getId())));
+        comment.setCommentText(commentDto.getCommentText());
         comment = commentRepository.save(comment);
         return commentMapper.fromModel(comment);
     }
 
     @Override
     @Transactional
-    public void deleteById(long id) {
-        commentRepository.deleteById(id);
+    @PreAuthorize("hasPermission(#commentDto, 'write')")
+    public void deleteById(CommentDto commentDto) {
+        commentRepository.deleteById(commentDto.getId());
     }
 
     private Book getBook(long bookId) {
