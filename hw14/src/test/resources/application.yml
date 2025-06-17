@@ -5,12 +5,39 @@ spring:
     init:
       mode: always
       data-locations: data.sql
-      schema-locations: schema.sql
   jpa:
     generate-ddl: false
     hibernate:
       ddl-auto: none
     show-sql: true
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: library
+
   shell:
     interactive:
       enabled: false
+    noninteractive:
+      enabled: false
+
+  batch:
+    job:
+      enabled: false
+
+mongock:
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.otus.hw.test_changelogs
+  mongo-db:
+    write-concern:
+      journal: false
+    read-concern: local
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.0.2
