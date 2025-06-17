@@ -234,7 +234,7 @@ public class JobConfig {
     @Bean
     public Step transformCommentStep(ItemReader<MongoComment> reader, JpaItemWriter<Comment> writer,
                                      ItemProcessor<MongoComment, Comment> processor) {
-        return new StepBuilder("transformBookStep", jobRepository)
+        return new StepBuilder("transformCommentStep", jobRepository)
                 .<MongoComment, Comment>chunk(CONVERT_ITEM_SIZE, platformTransactionManager)
                 .reader(reader)
                 .processor(processor)
