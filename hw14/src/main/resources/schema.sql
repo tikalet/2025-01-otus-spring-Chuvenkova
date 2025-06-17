@@ -24,3 +24,15 @@ create table book_comments (
     book_id bigint references books(id) on delete cascade,
     primary key (id)
 );
+
+create table book_migrate (
+    id bigint,
+    mongo_id varchar,
+    primary key (mongo_id)
+);
+
+create table author_migrate (
+    id bigint,
+    mongo_id varchar,
+    primary key (mongo_id)
+);
