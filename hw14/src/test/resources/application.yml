@@ -14,8 +14,8 @@ spring:
   data:
     mongodb:
       host: localhost
-      port: 0
-      database: library
+#      port: 0
+      database: test
 
   shell:
     interactive:
