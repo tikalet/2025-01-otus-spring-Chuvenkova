@@ -1,4 +1,7 @@
 spring:
+  main:
+    allow-bean-definition-overriding: true
+
   datasource:
     url: jdbc:h2:mem:testdb
   sql:
@@ -14,7 +17,7 @@ spring:
   data:
     mongodb:
       host: localhost
-#      port: 0
+      port: 0
       database: test
 
   shell:
