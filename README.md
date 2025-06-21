@@ -19,4 +19,5 @@
 12. \hw12 - домашняя работа по уроку "Spring Security: Механизмы аутентификации"
 13. \hw13 - домашняя работа по уроку "Spring Security: ACL"
 14. \hw14 - домашняя работа по уроку "Spring Batch"
+15. \hw15 - домашняя работа по уроку "Spring Integration: Endpoints и Flow Components"
 
