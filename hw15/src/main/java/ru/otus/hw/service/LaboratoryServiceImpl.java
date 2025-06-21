@@ -30,9 +30,7 @@ public class LaboratoryServiceImpl implements LaboratoryService {
         analysisTest.setMeasurementList(new ArrayList<>());
 
         for (String meas : analysisCache.getMeasurement(laboratoryOrder.getAnalysisName())) {
-            Measurement measurement = new Measurement();
-            measurement.setName(meas);
-            measurement.setNormal(getNormalValue());
+            Measurement measurement = new Measurement(meas, getNormalValue());
             analysisTest.getMeasurementList().add(measurement);
         }
 
