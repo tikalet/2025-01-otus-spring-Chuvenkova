@@ -47,8 +47,11 @@ public class IntegrationConfig {
     @Bean
     public IntegrationFlow doctorFlow(DoctorService doctorService) {
         return IntegrationFlow.from(laboratoryChannel())
+                .split()
                 .handle(doctorService, "signTest")
+                .aggregate()
                 .channel(doctorChannel())
                 .get();
     }
+
 }

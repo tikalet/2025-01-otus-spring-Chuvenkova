@@ -5,10 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.cache.AnalysisCache;
 import ru.otus.hw.cache.PatientCache;
+import ru.otus.hw.models.Description;
 import ru.otus.hw.models.LaboratoryOrder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -35,18 +38,28 @@ public class ProcedureRoomServiceImpl implements ProcedureRoomService {
                 log.info("make " + laboratoryOrder);
             }
 
-            laboratoryGateway.process(laboratoryOrderList);
-
             delay();
+
+            Collection<Description> descriptions = laboratoryGateway.process(laboratoryOrderList);
+            descriptions.forEach(this::printDescription);
         }
     }
 
     private void delay() {
         try {
-            Thread.sleep(4000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
+    private void printDescription(Description description) {
+        var text = "\nЗаключение\nПациент %s \nИсследование \"%s\"\n%s\n%s".formatted(description.getPatient(),
+                description.getAnalysisName(),
+                description.getMeasurementList().stream().map(m -> m.getName() + " " + m.isNormal())
+                        .collect(Collectors.joining(" || ")),
+                description.getDoctor());
+
+        log.info(text);
+    }
 }

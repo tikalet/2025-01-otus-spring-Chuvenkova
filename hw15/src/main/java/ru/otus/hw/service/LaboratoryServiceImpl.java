@@ -5,13 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.cache.AnalysisCache;
 import ru.otus.hw.models.AnalysisTest;
-import ru.otus.hw.models.Description;
 import ru.otus.hw.models.LaboratoryOrder;
 import ru.otus.hw.models.Measurement;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,8 +17,6 @@ import java.util.stream.Collectors;
 public class LaboratoryServiceImpl implements LaboratoryService {
 
     private final AnalysisCache analysisCache;
-
-    private final DoctorGateway doctorGateway;
 
     @Override
     public AnalysisTest doOrder(LaboratoryOrder laboratoryOrder) {
@@ -35,10 +31,9 @@ public class LaboratoryServiceImpl implements LaboratoryService {
         }
 
 //        log.info("do " + analysisTest);
+
         delay();
 
-        Description description = doctorGateway.process(analysisTest);
-        printDescription(description);
         return analysisTest;
     }
 
@@ -48,19 +43,10 @@ public class LaboratoryServiceImpl implements LaboratoryService {
 
     private static void delay() {
         try {
-            Thread.sleep(7000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void printDescription(Description description) {
-        var text = "\nЗаключение\nПациент %s \nИсследование \"%s\"\n%s\n%s".formatted(description.getPatient(),
-                description.getAnalysisName(),
-                description.getMeasurementList().stream().map(m -> m.getName() + " " + m.isNormal())
-                        .collect(Collectors.joining(" || ")),
-                description.getDoctor());
-
-        log.info(text);
-    }
 }
