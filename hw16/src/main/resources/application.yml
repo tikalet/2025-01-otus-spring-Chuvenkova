@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:maindb
+  sql:
+    init:
+      mode: always
+#      data-locations: data.sql
+#      schema-locations: schema.sql
+  jpa:
+    open-in-view: false
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+management:
+  server:
+    port: 8081
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, loggers
+  endpoint:
+    health:
+      show-details: always
+    loggers:
+      enabled: true
+  health:
+    defaults:
+      enabled: true
+
+logging:
+  file:
+    name: hw_16.log
