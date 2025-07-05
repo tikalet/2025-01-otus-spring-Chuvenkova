@@ -1,0 +1,2 @@
+docker build -t hw-17-image:v1 .
+docker run --name=hw-17-container -p:80:8080 --rm hw-17-image:v1
