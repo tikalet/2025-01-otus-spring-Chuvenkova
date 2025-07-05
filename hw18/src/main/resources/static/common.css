@@ -1,0 +1,24 @@
+body {
+	background-image: url(fon.svg);
+	background-repeat: repeat;
+}
+
+button {
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+}
+
+.link-button {
+	margin-right: 0;
+	padding: 0;
+	border: 0;
+	background-color: transparent;
+	text-decoration-line: underline;
+	color: #00E;
+}
