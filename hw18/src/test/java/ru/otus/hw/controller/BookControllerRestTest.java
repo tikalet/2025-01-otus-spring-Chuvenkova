@@ -1,18 +1,24 @@
 package ru.otus.hw.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.resilience4j.core.functions.CheckedFunction;
+import io.github.resilience4j.ratelimiter.RateLimiter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.client.RestClient;
+import ru.otus.hw.config.StorageBookProperties;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.BookUpdateDto;
 import ru.otus.hw.dto.ErrorDto;
 import ru.otus.hw.dto.GenreDto;
+import ru.otus.hw.dto.StorageInfoDto;
 import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.services.BookService;
 
@@ -42,6 +48,21 @@ public class BookControllerRestTest {
 
     @MockitoBean
     private BookService bookService;
+
+    @MockitoBean
+    private RestClient restClient;
+
+    @MockitoBean
+    private CheckedFunction<Long, StorageInfoDto> getFindStorageInfoFunction;
+
+    @MockitoBean
+    private StorageBookProperties storageBookProperties;
+
+    @MockitoBean
+    private CircuitBreaker circuitBreaker;
+
+    @MockitoBean
+    private RateLimiter rateLimiter;
 
     @DisplayName("должен отдать список книг")
     @Test
