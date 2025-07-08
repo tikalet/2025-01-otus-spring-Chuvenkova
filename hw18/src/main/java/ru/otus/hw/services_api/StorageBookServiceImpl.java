@@ -1,10 +1,8 @@
 package ru.otus.hw.services_api;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.dto.StorageInfoDto;
 
-@RequiredArgsConstructor
 @Service
 public class StorageBookServiceImpl implements StorageBookService {
 

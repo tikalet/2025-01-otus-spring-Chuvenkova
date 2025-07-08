@@ -2,7 +2,7 @@ package ru.otus.hw.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.resilience4j.core.functions.CheckedFunction;
-import io.github.resilience4j.ratelimiter.RateLimiter;
+import io.github.resilience4j.retry.Retry;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +62,7 @@ public class BookControllerRestTest {
     private CircuitBreaker circuitBreaker;
 
     @MockitoBean
-    private RateLimiter rateLimiter;
+    private Retry retry;
 
     @DisplayName("должен отдать список книг")
     @Test

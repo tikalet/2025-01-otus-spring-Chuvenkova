@@ -20,14 +20,16 @@ public class StorageBookControllerRest {
 
     @GetMapping("/storage/api/book/{id}")
     public ResponseEntity<StorageInfoDto> getStorageBookById(@PathVariable("id") Long id) {
-//        log.info("receive request");
-        delay();
-//        log.info("send response");
-        return ResponseEntity.ok(storageBookService.findInfo(id));
+        if (giveAnswer()) {
+            delay();
+            return ResponseEntity.ok(storageBookService.findInfo(id));
+        } else {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     private void delay() {
-        int sleepDuration = new Random().nextInt(100, 1500);
+        int sleepDuration = new Random().nextInt(100, 1000);
         log.info("sleep {} ms", sleepDuration);
 
         try {
@@ -35,5 +37,10 @@ public class StorageBookControllerRest {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean giveAnswer() {
+        int value = new Random().nextInt(1, 100);
+        return (value > 40);
     }
 }

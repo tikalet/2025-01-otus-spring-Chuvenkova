@@ -1,7 +1,7 @@
 package ru.otus.hw.controller;
 
 import io.github.resilience4j.core.functions.CheckedFunction;
-import io.github.resilience4j.ratelimiter.RateLimiter;
+import io.github.resilience4j.retry.Retry;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
@@ -42,7 +42,7 @@ public class BookControllerRest {
     public BookControllerRest(BookService bookService,
                               StorageBookProperties storageBookProperties,
                               CircuitBreaker circuitBreaker,
-                              RateLimiter rateLimiter) {
+                              Retry retry) {
         this.bookService = bookService;
 
         this.restClient = RestClient.builder()
@@ -50,27 +50,30 @@ public class BookControllerRest {
                 .baseUrl(storageBookProperties.getUrl())
                 .build();
 
-        this.getFindStorageInfoFunction = RateLimiter.decorateCheckedFunction(
-                rateLimiter,
-                bookId -> circuitBreaker.run(() -> findStorageInfo(bookId),
-                        t -> {
-                            log.error("delay call failed error: {}", t.getMessage());
-                            return null;
-                        }));
+        this.getFindStorageInfoFunction = bookId -> circuitBreaker.run(
+                () -> {
+                    try {
+                        return Retry.decorateCheckedFunction(retry, this::findStorageInfo)
+                                .apply(bookId);
+                    } catch (Throwable e) {
+                        throw new RuntimeException(e);
+                    }
+                },
+                t -> {
+                    log.error("Circuit breaker fallback, error: {}", t.getMessage());
+                    return null;
+                }
+        );
     }
 
     public StorageInfoDto findStorageInfo(Long bookId) {
-        try {
-            return restClient.get()
-                    .uri(uriBuilder -> uriBuilder.path("/storage/api/book/{id}")
-                            .build(Map.of("id", bookId)))
-                    .accept(MediaType.APPLICATION_JSON)
-                    .retrieve()
-                    .body(StorageInfoDto.class);
-        } catch (Exception e) {
-            log.error("Unable to send storageInfo request. Reason is", e);
-            return null;
-        }
+        log.warn("try send request");
+        return restClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/storage/api/book/{id}")
+                        .build(Map.of("id", bookId)))
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .body(StorageInfoDto.class);
     }
 
     @GetMapping("/api/book")
@@ -89,10 +92,10 @@ public class BookControllerRest {
 //            storageInfoDto = findStorageInfo(id);
 
             if (storageInfoDto != null) {
-                log.info(storageInfoDto.toString());
+                log.info("receive {}", storageInfoDto.toString());
             }
         } catch (Throwable e) {
-            log.error(e.getMessage());
+            log.error("Unable send request. {}", e.getMessage());
         }
 
         return bookDto;
