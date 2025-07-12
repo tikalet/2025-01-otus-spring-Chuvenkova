@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:maindb
+  sql:
+    init:
+      mode: always
+#      data-locations: data.sql
+#      schema-locations: schema.sql
+  jpa:
+    open-in-view: false
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+storage-book:
+  url: http://localhost:8080
+
+resilience4j:
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 700ms
+  retry:
+    configs:
+      default:
+        maxAttempts: 3
+        waitDuration: 50ms  # Базовое время ожидания
+        randomizedWait: true  # Включить рандомизацию
+        maxRandomWait: 200ms  # Максимальное случайное время
+        retryExceptions:
+          - org.springframework.web.client.HttpServerErrorException
+          - java.lang.RuntimeException
