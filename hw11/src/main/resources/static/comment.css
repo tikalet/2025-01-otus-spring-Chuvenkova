@@ -1,0 +1,42 @@
+.comment-container {
+    display: flex;
+    width: 760px;
+    height: 300px;
+    overflow-y: scroll;
+    flex-direction: column;
+    background-color: #FFF;
+}
+
+.comment-container-data {
+    display: flex;
+    flex-direction: row;
+    min-height: 18px;
+}
+
+.comment-container-data:nth-child(2n) {
+    background-color: #DDD;
+}
+
+.comment-container-comment {
+    min-height: 18px;
+    padding-left: 5px;
+    width: 590px;
+}
+
+.comment-container-edit {
+	width: 80px;
+	min-height: 18px;
+	text-align: center;
+}
+
+.comment-container-delete {
+	width: 80px;
+	min-height: 18px;
+	text-align: center;
+}
+
+.comment-edit-row {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+}
